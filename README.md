@@ -1,1 +1,4 @@
-# Algorithm_ps
+# Problem Solving
+* BOJ
+* Leetcode
+* Codeforce
