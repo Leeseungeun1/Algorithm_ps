@@ -1,0 +1,64 @@
+/*
+  1018-체스판 다시 칠하기
+  우선 완벽한 체스판 두 종류를 준비한다.
+  그리고 주어진 판 안에서 해당 완벽한 체스판과 비교해 가면서 바꿔야 하는 칸을 찾고,
+  해당 변경 칸 수의 최소값을 찾는 방식으로 문제를 해결한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, M;
+	cin >> N >> M;
+	vector<vector<char>> arr(N, vector<char>(M, 0));
+	vector<vector<char>> ans1(8, vector<char>(8, 0));
+	vector<vector<char>> ans2(8, vector<char>(8, 0));
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> arr[i][j];
+		}
+	}
+	
+	ans1[0][0] = 'W';
+	ans2[0][0] = 'B';
+	for (int i = 1; i < 8; i++) {
+		if (ans1[0][i - 1] == 'W') ans1[0][i] = 'B';
+		else ans1[0][i] = 'W';
+		if (ans2[0][i - 1] == 'W') ans2[0][i] = 'B';
+		else ans2[0][i] = 'W';
+	}
+	for (int i = 1; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (ans1[i - 1][j] == 'B') ans1[i][j] = 'W';
+			else ans1[i][j] = 'B';
+			if (ans2[i - 1][j] == 'B') ans2[i][j] = 'W';
+			else ans2[i][j] = 'B';
+		}
+	}
+
+	int answer = 987654321;
+	for (int row = 0; row <= N-8; row++) {
+		for (int col = 0; col <= M-8; col++) {
+			int firstcount = 0;
+			int secondcount = 0;
+			for (int i = row; i < row + 8; i++) {
+				for (int j = col; j < col + 8; j++) {
+					if (arr[i][j] != ans1[i-row][j-col]) firstcount++;
+					if (arr[i][j] != ans2[i-row][j-col]) secondcount++;
+				}
+			}
+			firstcount = min(firstcount, secondcount);
+			answer = min(firstcount, answer);
+		}
+	}
+
+	cout << answer << "\n";
+	return 0;
+}
