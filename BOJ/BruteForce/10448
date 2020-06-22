@@ -1,0 +1,40 @@
+/*
+  10448-유레카 이론
+  입력되는 최대 수는 1000이고, T_50의 값이 1000을 넘어간다.
+  따라서 T_1~T_50까지의 값을 모두 구해놓고, 세 수에 각각의 T값을 대입하면서 input수를 만들 수 있는지 여부를 확인하는 방법으로 문제를 해결한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int t;
+	cin >> t;
+	while (t--) {
+		int N;
+		cin >> N;
+		vector<vector<int>> arr(3, vector<int>(50, 0));
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 50; j++) {
+				arr[i][j] = ((j + 1) * (j + 2)) / 2;
+			}
+		}
+
+		int answer = 0;
+		for (int i = 0; i < 50; i++) {
+			for (int j = 0; j < 50; j++) {
+				for (int k = 0; k < 50; k++) {
+					if (arr[0][i] + arr[1][j] + arr[2][k] == N) answer = 1;
+				}
+			}
+		}
+		cout << answer << "\n";
+
+	}	
+	return 0;
+}
