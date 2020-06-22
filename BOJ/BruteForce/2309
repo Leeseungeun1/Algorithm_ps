@@ -1,0 +1,62 @@
+/*
+  2309-일곱 난쟁이
+  이 문제의 가장 간단한 풀이는 난쟁이 키를 입력받고, 해당 키를 sort한 다음 하위 7개의 값을 출력하면 된다.
+  하지만 완전 탐색을 스스로 구현 해 보기 위해서 이 문제를 풀었기 때문에, 나는 이 문제를 완전 탐색으로 해결했다.
+  일반적인 완전 탐색 문제처럼, 각 사람이 난쟁이라고 가정 한 뒤에 난쟁이 키를 합하여 100인 경우에 해당 키들을 정답 vector에 넣어
+  정답을 출력함으로 해결할 수 있다.
+*/
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+bool find_person(vector<int>& arr, vector<bool>& check, vector<int> &answer, int level, int checknum) {
+	if (level == 9) {
+		if (checknum != 7) return false;
+		else {
+			int sum = 0;
+			for (int i = 0; i < 9; i++) {
+				if (check[i] == true) {
+					sum = sum + arr[i];
+				}
+			}
+			if (sum == 100) {
+				for (int i = 0; i < 9; i++) {
+					if (check[i] == true) {
+						answer.push_back(arr[i]);
+					}
+				}
+				return true;
+			}
+			else return false;
+		}
+	}
+	else {
+		check[level] = true;
+		if (find_person(arr, check, answer, level + 1, checknum + 1)) return true;
+		check[level] = false;
+		if (find_person(arr, check, answer, level + 1, checknum)) return true;
+		return false;
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	vector<int> small(9);
+	vector<bool> check(9);
+	for (int i = 0; i < 9; i++) {
+		cin >> small[i];
+		check[i] = false;
+	}
+	vector<int> answer;
+	find_person(small, check, answer, 0, 0);
+	sort(answer.begin(), answer.end());
+	for (int i = 0; i < answer.size(); i++) {
+		cout << answer[i] << "\n";
+	}
+	return 0;
+}
