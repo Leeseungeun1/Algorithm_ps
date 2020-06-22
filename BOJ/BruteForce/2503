@@ -1,0 +1,69 @@
+/*
+  2503-숫자 야구
+  영수가 생각할 수 있는 모든 수에 대해서 brute force를 진행한다.
+  민혁이가 말한 모든 경우에 성립하는 숫자를 찾아야 하므로, 영수가 생각할 수 있는 모든 수에서 민혁이가 말한 각 경우에 부합하지 않는 수를 빼면서
+  문제를 해결한다.
+  본 코드는 민혁이가 말할 수 있는 숫자를 각 경우에 대입하여, 각 수마다 strike와 ball의 수가 다른 경우 해당 수를 제외하는 방식으로 진행된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	vector<bool> answer(1000);
+	for (int i = 0; i < 1000; i++) answer[i] = false;
+	for (int i = 1; i < 10; i++) {
+		for (int j = 1; j < 10; j++) {
+			if (i == j) continue;
+			for (int k = 1; k < 10; k++) {
+				if (i == k || j == k) continue;
+				int num = i * 100 + j * 10 + k;
+				answer[num] = true;
+			}
+		}
+	}
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int num, strike, ball;
+		cin >> num >> strike >> ball;
+		for (int i = 100; i < 1000; i++) {
+			if (answer[i] == false) continue;
+			vector<int> arr(3);
+			vector<bool> check(10);
+			for (int j = 0; j < 10; j++) check[j] = false;
+
+			int temp = i;
+			for (int index = 2; index >= 0; index--) {
+				arr[index] = temp % 10;
+				check[arr[index]] = true;
+				temp = temp / 10;
+			}
+
+			int s = 0, b = 0;
+			int index = 2;
+			temp = num;
+			while (temp != 0) {
+				if (check[temp % 10] == true) {
+					if (arr[index] == temp % 10) s++;
+					else b++;
+				}
+				index--;
+				temp = temp / 10;
+			}
+			if (s != strike || b != ball) answer[i] = false;
+		}
+	}
+
+	int sum = 0;
+	for (int i = 100; i < 1000; i++) {
+		if (answer[i]) sum++;
+	}
+	cout << sum;
+	return 0;
+}
