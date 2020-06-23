@@ -1,0 +1,47 @@
+/*
+  1931-회의실 배정
+  한 회의실에 최대한 많은 회의를 잡기 위해서는 빨리 시작하고, 회의시간이 얼마 안걸리는 회의를 우선순위로 하여 회의실 배정을 할당하면 된다.
+  이 코드는 회의 시작시간을 기준으로 회의시간을 배정하되, 뒤에 시작하는 회의 중에서 이전에 시작하는 회의보다 빨리 끝나는 회의가 있다면,
+  해당 회의를 더 우선시하여 회의실을 배정하는 방법을 선택하였다.
+  이 때, 회의 시작시간과 회의 종료시간이 같은 경우도 있으므로 해당 회의는 무조건 회의실을 배정하는 방식으로 문제를 해결하였다.
+*/
+
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+bool cmp(pair<int, int> a, pair<int, int>b) {
+	if (a.first == b.first) return a.second < b.second;
+	else return a.first < b.first;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int N;
+	cin >> N;
+	vector<pair<int, int>> time(N);
+	for (int i = 0; i < N; i++) {
+		cin >> time[i].first >> time[i].second;
+	}
+	sort(time.begin(), time.end(), cmp);
+
+	int start = time[0].first, end = time[0].second;
+	int answer = 1;
+	for (int i = 1; i < N; i++) {
+		if (end <= time[i].first) {
+			end = time[i].second;
+			answer++;
+		}
+		else if (start <= time[i].first && time[i].second <= end) {
+			start = time[i].first;
+			end = time[i].second;
+		}
+	}
+	cout << answer;
+	return 0;
+}
