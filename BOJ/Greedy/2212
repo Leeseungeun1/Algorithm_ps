@@ -1,0 +1,41 @@
+/*
+  2212-센서
+  각 지점 간의 거리를 구하고, 거리간 합이 최소가 되어야 하므로 큰 거리를 제외하면서 문제를 해결할 수 있다.
+  문득 해당 문제를 풀면서 느낀 것 인데 greedy기법은 참으로 접근 요소가 다양하기 때문에
+  많은 greedy접근을 시도 해 보는 것이 좋다고 생각한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, K;
+	cin >> N >> K;
+    vector<int> arr(N);
+	for (int i = 0; i < N; i++) {
+		cin >> arr[i];
+	}
+	if (N <= K) {
+		cout << "0\n";
+	}
+	else {
+		sort(arr.begin(), arr.end());
+		vector<int> diff(N - 1);
+		int answer = 0;
+		for (int i = 0; i < N - 1; i++) {
+			diff[i] = arr[i + 1] - arr[i];
+			answer = answer + diff[i];
+		}
+		sort(diff.begin(), diff.end());
+		for (int i = 0; i < K - 1; i++) {
+			answer = answer - diff[N - 2 - i];
+		}
+		cout << answer;
+	}
+	return 0;
+}
