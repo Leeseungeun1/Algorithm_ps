@@ -1,0 +1,39 @@
+/*
+  15784-질투진서
+  탐욕적으로 판단해야 하는 부분은 매력지수다.
+  진서가 위치한 자리에 걸친 행과 열의 매력 지수를 보면서, 진서보다 높은 매력의 여부를 확인한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+vector<vector<int>> arr(1001);
+bool cmp(int a, int b) {
+	return a<b;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, a, b;
+	cin >> N >> a >> b;
+	vector<vector<int>> arr(N, vector<int>(N, 0));
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	int num = arr[a-1][b-1];
+	bool flag = false;
+	for (int i = 0; i < N; i++) {
+		if (arr[a-1][i] > num || arr[i][b-1] > num) flag = true;
+	}
+
+	if (flag == true) cout << "ANGRY";
+	else cout << "HAPPY";
+	return 0;
+}
