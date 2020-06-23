@@ -1,0 +1,38 @@
+/*
+  1449-수리공 항승
+  이 문제는 하나의 테이프로 최대한 많은 부분을 커버하면서 수리하는 방향으로 해결하면 풀리는 문제다.
+  항승이는 항상 파이프가 더 새지 않도록 양 옆에 0.5만큼 여유를 주고 파이프를 막기 때문에, 테프으의 길이에서 1만큼 빼고
+  물이 새는 지점을 막으면 된다.
+  이렇가 가장 좌측부터 차례대로 물이 새는 지점을 막으면 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int N, L;
+	cin >> N >> L;
+	vector<int> pipe(N);
+	for (int i = 0; i < N; i++) {
+		cin >> pipe[i];
+	}
+	sort(pipe.begin(), pipe.end());
+	L = L - 1;
+
+	int start = pipe[0];
+	int ans = 1;
+	for (int i = 1; i < N; i++) {
+		if (pipe[i] <= start + L) continue;
+		else {
+			ans++;
+			start = pipe[i];
+		}
+	}
+	cout << ans;
+	return 0;
+}
