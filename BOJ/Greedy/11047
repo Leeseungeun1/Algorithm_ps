@@ -1,0 +1,38 @@
+/*
+  11047-동전0
+  동전 A_i가 동전 A_i-1의 배수이기 때문에, 동전 A_i를 동전 A_i-1로 표현할 수 있다.
+  따라서 동전의 최소 수를 구하기 위해서는 가장 큰 가치의 동전부터 차례대로 주어진 값중 얼마를 만들 수 있는지 확인해가면서 
+  greedy하게 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int N, K;
+	cin >> N >> K;
+	vector<int> money(N);
+	for (int i = 0; i < N; i++) {
+		cin >> money[i];
+	}
+	sort(money.begin(), money.end());
+
+	int answer = 0;
+	int index = N - 1;
+	while (K != 0) {
+		if (money[index] <= K) {
+			answer = answer + K / money[index];
+			K = K - (K / money[index]) * money[index];
+			index--;
+		}
+		else index--;
+	}
+
+	cout << answer;
+	return 0;
+}
