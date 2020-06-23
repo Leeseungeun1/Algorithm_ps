@@ -1,0 +1,31 @@
+/*
+  4796-캠핑
+  캠핑을 제일 많이할 수 있는 쪽으로 문제를 해결하면 된다.
+  우선 휴가 중에서 연속 된 P일을 채울 수 있는 횟수를 찾고, 남은 경우 내에서 어떻게 캠핑을 최대로 즐길 수 있는지를 처리하면 해결 되는 문제다.
+  이런식으로 문제를 해결하면, L일 캠핑->P-L일 휴식->L일 캠핑... 의 과정을 반복하게 된다.
+*/
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int L, P, V;
+	int caseNum = 1;
+	while (1) {
+		cin >> L >> P >> V;
+		if (L == 0 && P == 0 && V == 0) break;
+		int ans = (V / P) * L;
+		V = V - (V/P) * P;
+		ans += min(V, L);
+		cout << "Case " << caseNum << ": " << ans << "\n";
+        caseNum++;
+	}
+
+	return 0;
+}
