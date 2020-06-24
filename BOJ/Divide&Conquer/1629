@@ -1,0 +1,37 @@
+/*
+  1629-곱셈
+  곱하는 횟수가 억이 넘어가기 때문에 단순한 for문을 사용하게 되면 시간초과가 나는 문제다.
+  따라서 시간초과를 해결하기 위해서는 분할정복을 이용해야한다.
+  a^2n=a^n*a^n,
+  a^2n+1=a^n*a^n*a
+  임을 이용하여 분할정복을 적용하면 해결된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+typedef long long ll;
+
+ll multiple(ll a, ll b, ll c) {
+	if (b == 0) return 1;
+	ll res = 1;
+	
+	ll ret = multiple(a, b / 2, c);
+	res = ((ret%c) * (ret % c))%c;
+
+	if (b % 2 == 1) {
+		res = ((res % c) * (a%c))%c;
+	}
+	return res;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll a, b, c;
+	cin >> a >> b >> c;
+	cout<<multiple(a, b, c)<<"\n";
+	return 0;
+}
