@@ -1,0 +1,66 @@
+/*
+  2104 (2) - 부분배열 고르기
+  이 풀이는 2104 (1)의 과정보다 조금 더 '정복'단계가 의미있는 풀이다.
+  히스토그램풀이와 굉장히 유사한 풀이로 그냥 배열의 중심을 기준으로 왼쪽 배열과 오른쪽 배열로 나눈다.
+  그리고 각 배열의 합*최솟값을 구해 return한다.
+  그리고 왼쪽 오른쪽의 배열에 대한 return값을 모두 받으면, 해당 범위의 중간 배열부터 시작해서
+  왼쪽과 오른쪽에 걸쳐있는 최대의 합*최솟값이 있는지를 확인하는 과정을 거친다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+
+using namespace std;
+typedef long long ll;
+
+ll find_max(ll start, ll end, vector<ll>& arr) {
+	if (start == end) return arr[start]* arr[start];
+	ll mid = (start + end) / 2;
+	ll left = find_max(start, mid, arr);
+	ll right = find_max(mid + 1, end, arr);
+	
+	ll l = mid, r = mid;
+	ll sum = arr[l];
+	ll minimum = arr[l];
+	ll ret = 0;
+	while (l > start || r < end) {
+		if (r + 1 <= end && (l == start || (arr[l - 1] < arr[r + 1]))) {
+			minimum = min(minimum, arr[r + 1]);
+			sum = sum + arr[r + 1];
+			r++;
+			if (ret < minimum *sum) {
+				ret = minimum * sum;
+			}
+		}
+		else {
+			minimum = min(minimum, arr[l-1]);
+			sum = sum + arr[l - 1];
+			l--;
+			if (ret < minimum * sum) {
+				ret = minimum * sum;
+			}
+		}
+	}
+	ret = max(ret, left);
+	ret = max(ret, right);
+	return ret;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N;
+	cin >> N;
+	vector<ll> arr(N);
+	for (ll i = 0; i < N; i++) {
+		cin >> arr[i];
+	}
+
+	cout<<find_max(0, N-1, arr);
+	
+	return 0;
+}
