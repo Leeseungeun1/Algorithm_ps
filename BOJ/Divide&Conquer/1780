@@ -1,0 +1,65 @@
+/*
+  1780-종이의 개수
+  한 N*N종이를 한 종이로 보지 못한다면 해당 종이를 9조각으로 나누게 된다.
+  그렇기 때문에 우선 해당 N*N종이가 하나의 종이인지 여부를 확인한다.
+  그리고 하나의 종이가 아닌 경우 해당 종이를 9조각으로 분할하여 분할 조각을 다시 확인하는 방법으로 문제를 해결한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+
+using namespace std;
+typedef long long ll;
+
+int ans[3];
+
+void find_num(vector<vector<int>>& arr, int rs, int re, int cs, int ce) {
+	bool flag = true;
+	int first = arr[rs][cs];
+	for (int i = rs; i <= re; i++) {
+		for (int j = cs; j <= ce; j++) {
+			if (first != arr[i][j]) {
+				flag = false;
+				break;
+			}
+		}
+		if (!flag) break;
+	}
+
+	if (flag) {
+		ans[first + 1]++;
+		return;
+	}
+	
+	int size = (re - rs + 1) / 3;
+	vector<vector<int>> res(3, vector<int>(3));
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			find_num(arr, rs + i * size, rs + i * size + size - 1, cs + j * size, cs + j * size + size - 1);
+		}
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N;
+	cin >> N;
+	vector<vector<int>> arr(N, vector<int>(N));
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	find_num(arr, 0, N - 1, 0, N - 1);
+	for (int i = 0; i < 3; i++) {
+		cout << ans[i] << "\n";
+	}
+	return 0;
+}
