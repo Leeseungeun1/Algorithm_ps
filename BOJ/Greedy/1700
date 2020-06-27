@@ -1,0 +1,71 @@
+/*
+  1700-멀티탭 스케줄링
+  해당 문제는 가장 나중에 쓰이는 멀티탭을 먼저 빼는 방향으로 문제를 해결한다.
+  따라서 queue를 이용하여 각 코드가 몇 번째에 사용되는지 정보를 저장한다.
+  그리고 만약 멀티탭이 다 차고, 다음 코드를 멀티탭에 꼽기 위해서 기존에 멀티탭에 있는 코드를 뽑아야 하는 경우,
+  기존에 멀티탭 중 그 다음으로 나오는 순서가 제일 늦은 코드를 파악하여 해당 멀티탭을 제거한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+
+using namespace std;
+
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, K;
+	cin >> N >> K;
+
+	vector<int> arr(K + 1);
+	vector<queue<int>> start(K + 1);
+	vector<bool> exist(K + 1);
+	for (int i = 1; i <= K; i++) {
+		exist[i] = false;
+	}
+	for (int i = 1; i <= K; i++) {
+		cin >> arr[i];
+		start[arr[i]].push(i);
+	}
+
+	int num = 0;
+	int use = 0;
+	for (int i = 1; i <= K; i++) {
+		if (exist[arr[i]] == true) {
+			start[arr[i]].pop();
+			continue;
+		}
+		if (use < N) {
+			exist[arr[i]] = true;
+			start[arr[i]].pop();
+			use++;
+		}
+		else {
+			int index = -1;
+			for (int j = 1; j <= K; j++) {
+				if (exist[j] == false) continue;
+				if (index == -1) {
+					index = j;
+					continue;
+				}
+				if (start[j].empty() && !start[index].empty()) index = j;
+				else if (!start[index].empty() && !start[j].empty() && start[index].front() < start[j].front()) index = j;
+			}
+			exist[index] = false;
+			exist[arr[i]] = true;
+			start[arr[i]].pop();
+			num++;
+		}
+	}
+
+	cout << num;
+
+	return 0;
+}
