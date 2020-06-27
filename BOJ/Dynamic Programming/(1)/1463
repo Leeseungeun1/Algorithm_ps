@@ -1,0 +1,43 @@
+/*
+  1463-1로 만들기
+  각 경우에 대해서 세 가지 연산이 존재한다.
+  따라서 각 세 연산에 따른 결과값을 비교하여, 최솟값을 구하는 방식으로 문제를 해결한다.
+  이 때, 3으로 나눈 값, 2로 나눈값, 1로 뺀 값에 대한 연산 결과를 저장하여(메모이제이션) 시간을 절약할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+
+using namespace std;
+typedef long long ll;
+
+ll cnt[1000001];
+
+int find_min(int num) {
+	if (cnt[num] != -1) return cnt[num];
+
+	int res = find_min(num - 1) + 1;
+	if (num % 3 == 0) res = min(res, find_min(num / 3) + 1);
+	if (num % 2 == 0) res = min(res, find_min(num / 2) + 1);
+
+	cnt[num] = res;
+	return cnt[num];
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	for (int i = 0; i < 1000001; i++) cnt[i] = -1;
+	cnt[1] = 0;
+
+	int N;
+	cin >> N;
+	cout<< find_min(N);
+
+	return 0;	
+}
