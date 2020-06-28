@@ -1,0 +1,60 @@
+/*
+  (이 문제는 대회가 끝난 후 해결 한 문제다.)
+  우선 alice와 bob이 각각 좋아하는 책, 그리고 둘이 동시에 좋아하는 책을 따로 분류하여 저장한다.
+  여기서 책의 set를 구할 때 다음과 같은 경우를 생각할 수 있다.
+    1) 둘이 동시에 좋아하는 책을 다 선택해야만 시간이 절약되는 경우
+    2) 둘이 동시에 좋아하는 책이 다 선택되지 않더라도 시간이 절약되는 경우
+   따라서 2번을 해결하기 위해서 alice와 bob이 서로 각자 좋아하는 책을 한 권씩 읽은 경우의 시간을 계산한다.
+   그리고 해당 시간들과 둘이 모두 좋아하는 책의 시간을 가진 배열을 정렬한 뒤, 시간이 적은 순서대로 책을 선택하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll n, k;
+	cin >> n >> k;
+	vector<ll> alice;
+	vector<ll> bob;
+	vector<ll> both;
+
+	for (ll i = 0; i < n; i++) {
+		ll t, a, b;
+		cin >> t >> a >> b;
+		if (a == 1 && b == 1) both.push_back(t);
+		else if (a == 1 && b == 0) alice.push_back(t);
+		else if (a == 0 && b == 1) bob.push_back(t);
+	}
+
+	ll alicesize = alice.size();
+	ll bothsize = both.size();
+	ll bobsize = bob.size();
+	if (!(alicesize + bothsize >= k && bobsize + bothsize >= k)) cout << "-1\n";
+	else {
+		sort(alice.begin(), alice.end());
+		sort(bob.begin(), bob.end());
+		
+		ll alicecnt = 0, bobcnt = 0, time = 0;
+		ll limit = min(alicesize, bobsize);
+		for (ll i = 0; i < limit; i++) {
+			both.push_back(alice[i] + bob[i]);
+		}
+		sort(both.begin(), both.end());
+
+		for (ll i = 0; i < k; i++) time = time + both[i];
+		cout << time << "\n";
+	}
+	return 0;
+}
