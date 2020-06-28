@@ -1,0 +1,45 @@
+/*
+  우선 주어진 수를 소인수 분해 했을 때, 2와 3으로만 구성되어있는지 확인한다.
+  만약 2와 3으로만 구성되어있지 않다면, 아무리 해당 수에 2를 곱해도 6으로 나누어 떨어지지않아 1을 만들 수 없게 된다.
+  2와 3으로만 구성되어있는 경우, 만약 2의 지수가 3의 지수보다 크다면, 해당 수를 6으로 나누기 위해서는 3을 곱해야한다.
+  하지만 밟을 수 있는 step은 2를 곱하는 경우밖에 없으므로, 이 경우 역시 1로 만들 수 없다.
+  3의 지수가 2보다 크다면, 2의 지수와 3의 지수가 같아질 때까지 2를 곱하고, (2*3)의 지수만큼 6으로 나누면 1로 만들 수 있다.
+*/
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll t;
+	cin >> t;
+	while (t--) {
+		ll n;
+		cin >> n;
+		int two = 0, three = 0;
+		while (n % 2 == 0) {
+			two++;
+			n = n / 2;
+		}
+		while (n % 3 == 0) {
+			three++;
+			n = n / 3;
+		}
+		if (n != 1 || two > three) cout << "-1\n";
+		else {
+			int ans = two + 2 * (three - two);
+			cout << ans << "\n";
+		}
+	}
+	return 0;
+}
