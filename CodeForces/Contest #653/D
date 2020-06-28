@@ -1,0 +1,57 @@
+/*
+  이 수는 문제를 해결하기 위해서 x를 얼마만큼 증가시켜야하는지를 판단하면 해결되는 문제다.
+  각 원소에 대해서 k값으로 나눠 떨어지기 위해서 더해줘야하는 값들을 계산한다.
+  그리고 만약 더해줘야하는 값들이 중복이 된다면, 각 값들에는 k만큼 더하여 차별화를 한다.
+  예를 들어서 k=6이고, 더해줘야하는 값들이 3,3,3으로 나온 경우, 각 값들을 3, 9, 15로 변형해 서로 다른 경우로 만들어 준다.
+  (이는 한 x당 한 원소에만 더해질 수 있기 때문이다.)
+  그렇게 더해줘야하는 값들을 나열한 후, 최대 x값까지 더해주기 위해서 몇 번의 step을 밟아야 하는지를 계산 해 주면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll t;
+	cin >> t;
+	while (t--) {
+		ll n, k;
+		cin >> n >> k;
+		vector<ll> arr(n);
+		
+		for (int i = 0; i < n; i++) {
+			ll num;
+			cin >> num;
+			ll mod = num % k;
+			if (mod == 0) {
+				arr[i] = 0;
+				continue;
+			}
+			arr[i] = (k - mod);
+		}
+
+		sort(arr.begin(), arr.end());
+		ll cnt = 0;
+		ll maximum = 0;
+		for (int i = 1; i < n; i++) {
+			if (arr[i] == 0) continue;
+			if (arr[i - 1] == arr[i]) cnt++;
+			else cnt = 0;
+			maximum = max(maximum, arr[i] + cnt * k);
+		}
+		if (maximum == 0) cout << "0\n";
+		else cout << maximum + 1 << "\n";
+	}
+	return 0;
+}
