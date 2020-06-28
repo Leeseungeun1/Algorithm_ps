@@ -1,0 +1,50 @@
+/*
+  이 문제는 괄호를 string의 시작이나 끝으로 옮길 수 밖에 없다.
+  따라서 그냥 짝이 맞지 않는 괄호의 수를 센 후, 해당 괄호 중 열린 괄호들이나 닫힌 괄호들을 앞으로, 또는 뒤로 옮기게 된다면 자연스럽게 괄호의 짝이 맞춰지게 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll t;
+	cin >> t;
+	while (t--) {
+		ll n;
+		cin >> n;
+		string s;
+		cin >> s;
+		stack<char> st;
+		ll open = 0, close = 0;
+		for (int i = 0; i < s.size(); i++) {
+			if (s[i] == '(') {
+				st.push(s[i]);
+				open++;
+			}
+			else if (s[i] == ')') {
+				if (!st.empty() && st.top() == '(') {
+					st.pop();
+					open--;
+				}
+				else {
+					close++;
+					st.push(s[i]);
+				}
+			}
+		}
+		cout << min(open, close) << "\n";
+	}
+	return 0;
+}
