@@ -43,7 +43,7 @@ int main() {
 
 		sort(arr.begin(), arr.end());
 		ll cnt = 0;
-		ll maximum = 0;
+		ll maximum = arr[0];
 		for (int i = 1; i < n; i++) {
 			if (arr[i] == 0) continue;
 			if (arr[i - 1] == arr[i]) cnt++;
