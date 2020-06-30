@@ -1,0 +1,72 @@
+/*
+  2512-예산
+  우선 지원금을 입력 받은 후, 예산 내에서 지원금을 제공할 수 있는지 여부를 확인한다.
+  그리고 제공할 수 있다면, 지원금의 최댓값을 출력한다.
+  만약 제공할 수 없다면, 상한금액을 이분탐색으로 탐색한다.
+  상한 금액이 0원이면 모든 지원금을 다 제공할 수 있고, 상한 금액이 최댓값이면 제공할 수 없는 경우다.
+  따라서 상한 금액의 중간 값을 구하고, 해당 중간값으로 모든 지원금을 다 제공할 수 있다면, 최소 상한값을 해당 중간 값으로 변경하고
+  그렇지 않다면 최대 상한값을 중간 값으로 변경한다.
+  이런 과정을 반복하면서 예산 안에서 모든 지역에 지원금을 줄 수 있는 최대 상한값을 구한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N, M;
+	cin >> N;
+	vector<ll> money(N);
+
+	ll total = 0, maximum = 0;;
+	for (int i = 0; i < N; i++) {
+		cin >> money[i];
+		total = total + money[i];
+		maximum = max(maximum, money[i]);
+	}
+	cin >> M;
+	if (total <= M) cout << maximum;
+	else {
+		ll start = 0, end = 1000000000;
+		while (start + 1 < end) {
+			ll mid = (start + end) / 2;
+			ll ssum = 0, msum = 0, esum = 0;
+			for (int i = 0; i < N; i++) {
+				if (money[i] >= start) ssum += start;
+				else ssum += money[i];
+			}
+			for (int i = 0; i < N; i++) {
+				if (money[i] >= mid) msum += mid;
+				else msum += money[i];
+			}
+			for (int i = 0; i < N; i++) {
+				if (money[i] >= end) esum += end;
+				else esum += money[i];
+			}
+			if (msum <= M) start = mid;
+			else end = mid;
+		}
+
+		ll sum = 0, answer = 0;
+		for (int i = 0; i < N; i++) {
+			if (money[i] >= start) sum += start;
+			else sum += money[i];
+		}
+		if (sum <= M) answer = start;
+		else answer = end;
+		cout << answer;
+	}
+
+	return 0;
+}
