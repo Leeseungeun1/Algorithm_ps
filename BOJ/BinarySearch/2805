@@ -1,0 +1,67 @@
+/*
+  2805-나무자르기
+  이 문제에서 우리가 탐색해야할 부분은 잘라내는 나무 길이의 기준이다.
+  따라서 나무길이의 최댓값과 최솟값을 설정한 뒤 탐색을 시작한다.
+  두 나무길이의 중간 값인 middle 값을 정하고, 최솟값과 중간값으로 모두 나무를 잘랐을 때, 둘 다 자른 나무길이의 합이 M을 못 넘는다면 middle값을 최솟값으로,
+  둘 다 자른 나무길이의 합이 M을 넘는다면 middle값을 최댓값으로 설정하여 이분탐색을 진행한다.
+  만약 최댓값과 최솟값의 차이가 1이 난다면, 자른 나무길이의 합이 M을 넘는 값을 두 값 중 구하여, 해당 값을 답으로 출력한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N, M;
+	cin >> N >> M;
+	vector<ll> tree(N);
+	for (int i = 0; i < N; i++) {
+		cin >> tree[i];
+	}
+
+	ll start = 0, end = 1000000000;
+	ll answer = 0;
+	while (start+1 < end) {
+		int s = 1, m = 1, e = 1;
+		ll ssum = 0;
+		ll msum = 0;
+		ll esum = 0;
+
+		ll mid = (start + end) / 2;
+		for (int i = 0; i < N; i++) {
+			if (tree[i] >= start) ssum = ssum + (tree[i] - start);
+			if (tree[i] >= end) esum = esum + (tree[i] - end);
+			if (tree[i] >= mid) msum = msum + (tree[i] - mid);
+		}
+		if (ssum < M) s = -1;
+		else s = 1;
+		if (msum < M) m = -1;
+		else m = 1;
+		if (esum < M) e = -1;
+		else e = 1;
+
+		if (s * m < 0) end = mid;
+		else if (m * e < 0) start = mid;
+	}
+
+	ll ssum = 0;
+	for (int i = 0; i < N; i++) {
+		if (tree[i] >= start) ssum = ssum + (tree[i] - start);
+	}
+	if (ssum >= M) answer = start;
+	else answer = end;
+	
+	cout << answer;
+	return 0;
+}
