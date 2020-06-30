@@ -1,0 +1,61 @@
+/*
+  16434-드래곤 앤 던전
+  이 문제에서 탐색해야할 값은 '용사의 최대 HP'다.
+  따라서 용사의 HP의 최댓값과 최솟값을 지정한 후, 중간값을 계산한다.
+  그리고 중간값의 HP를 갖고 방을 이동할 때, 드래곤과 싸우는 과정에서 용사가 목숨을 잃는다면 HP의 값이 너무 작다는 의미이므로 중간값+1을 HP의 최솟값으로 둔다.
+  만약 중간값의 HP를 갖고 방을 이동할 때, 공주를 구할 수 있다면, HP의 값이 충분하다는 뜻이므로 해당 HP값을 저장하고 최댓값을 중간값-1로 다시 설정한다. 그리고 더 작은 HP값이 존재하는지 살펴본다.
+  이렇게 HP값을 이분 탐색하여 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	ll N, atk;
+	cin >> N >> atk;
+	vector<pair<ll, pair<ll, ll>>> room(N);
+	for (int i = 0; i < N; i++) {
+		cin >> room[i].first >> room[i].second.first >> room[i].second.second;
+	}
+
+	ll start = 1, end = LLONG_MAX / 2;
+	ll ans = LLONG_MAX / 2;
+	while (start <= end) {
+		ll mid = (start + end) / 2;
+		ll hp = mid;
+		ll attack = atk;
+		bool flag = true;
+		for (int i = 0; i < N; i++) {
+			if (room[i].first == 1) {
+				ll number = room[i].second.second / attack;
+				if (room[i].second.second % attack != 0) number++;
+				hp = hp - (number - 1) * room[i].second.first;
+				if (hp <= 0) flag = false;
+			}
+			else if (room[i].first == 2) {
+				attack = attack + room[i].second.first;
+				hp = min(hp + room[i].second.second, mid);
+			}
+			if (flag == false) break;
+		}
+		if (flag) {
+			ans = min(ans, mid);
+			end = mid - 1;
+		}
+		else start = mid + 1;
+	}
+	cout << ans;
+
+	return 0;
+}
