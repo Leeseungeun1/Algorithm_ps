@@ -1,0 +1,49 @@
+/*
+  1654-랜선 자르기
+  자르는 랜선의 길이를 탐색하는 문제로, 랜선 길이의 최대값과 최솟값을 설정한다.
+  그리고 중간값의 랜선 길이를 설정 했을 때 몇 조각으로 나오는지 확인한 후, 만약 원하는 조각보다 같거나 많은 조각이 나온다면, 해당 길이의 정보를 저장한다.
+  이 과정을 반복하여 원하는 조각보다 같거나 많은 조각을 만드는 랜선 길이의 최댓값을 구한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N, M;
+	cin >> N >> M;
+	vector<ll> line(N);
+
+	ll start = 1, end = 0;
+	for (ll i = 0; i < N; i++) {
+		cin >> line[i];
+		end = max(end, line[i]);
+	}
+
+	ll ans = 0;
+	while (start <= end) {
+		ll mid = (start + end) / 2;
+		ll cnt = 0;
+		for (ll i = 0; i < N; i++) {
+			cnt += (line[i] / mid);
+		}
+		if (cnt < M) end = mid-1;
+		else {
+			start = mid + 1;
+			ans = max(ans, mid);
+		}
+	}
+	cout << ans;
+	return 0;
+}
