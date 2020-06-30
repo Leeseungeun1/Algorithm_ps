@@ -1,0 +1,64 @@
+/*
+  2343-기타레슨
+  이 문제는 블루레이의 크기에 대해 탐색하는 문제다.
+  우선 블루레이의 최솟값과 최댓값을 설정한다.
+  그리고 중간값을 구한 후, 해당 중간값으로 몇 개의 블루레이를 만들 수 있는지 확인한다.
+  만약 계획한 블루레이의 수보다 적은 수의 블루레이가 나온다면, 블루레이의 길이가 너무 긴 것이므로 중간값을 최댓값으로 변경한다.
+  만약 계획한 블루레이의 수보다 많은 수의 블루레이가 나온다면, 블루레이의 길이가 너무 짧은 것 이므로 중간값을 최솟값으로 변경한다.
+  이러한 과정을 반복하며 최소 블루레이의 길이를 구하는 이분탐색 문제다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N, M;
+	cin >> N >> M;
+	vector<ll> time(N);
+	ll start = 0, end = 100000000;
+
+	for (int i = 0; i < N; i++) {
+		cin >> time[i];
+		start = max(start, time[i]);
+	}
+
+	while (start + 1 < end) {
+		ll mid = (start + end) / 2;
+		ll sum = 0;
+		ll cnt = 1;
+		for (int i = 0; i < N; i++) {
+			if (sum + time[i] <= mid) sum = sum + time[i];
+			else {
+				sum = time[i];
+				cnt++;
+			}
+		}
+		if (cnt <= M) end = mid;
+		else start = mid;
+	}
+
+	ll sum = 0, cnt = 1;
+	for (int i = 0; i < N; i++) {
+		if (sum + time[i] <= start) sum = sum + time[i];
+		else {
+			sum = time[i];
+			cnt++;
+		}
+	}
+
+	if (cnt <= M) cout << start;
+	else cout << end;
+	return 0;
+}
