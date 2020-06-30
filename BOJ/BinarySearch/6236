@@ -1,0 +1,64 @@
+/*
+  6236-용돈 관리
+  이 문제는 2343번 문제와 동일한 문제다.
+  우선 인출할 금액의 최댓값과 최솟값을 설정한다.
+  그리고 중간값을 구하여, 해당 중간 값만큼 돈을 인출한다면 몇 번 인출해야하는지 계산한다.
+  만약 인출 횟수가 목표 횟수보다 적다면, 한 번에 너무 많은 돈을 인출한 것 이므로 중간 값을 최댓값으로 설정한다.
+  만약 인출 횟수가 목표 횟수보다 많다면, 한 번에 너무 적은 돈을 인출한 것 이므로 중간값을 최솟값으로 설정한다.
+  이런 과정을 통해 최소 인출 금액을 이분탐색으로 구할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N, M;
+	cin >> N >> M;
+	vector<ll> money(N);
+	ll start = 0, end = 100000000;
+
+	for (int i = 0; i < N; i++) {
+		cin >> money[i];
+		start = max(start, money[i]);
+	}
+
+	while (start + 1 < end) {
+		ll mid = (start + end) / 2;
+		ll sum = 0;
+		ll cnt = 1;
+		for (int i = 0; i < N; i++) {
+			if (sum + money[i] <= mid) sum = sum + money[i];
+			else {
+				sum = money[i];
+				cnt++;
+			}
+		}
+		if (cnt <= M) end = mid;
+		else start = mid;
+	}
+
+	ll sum = 0, cnt = 1;
+	for (int i = 0; i < N; i++) {
+		if (sum + money[i] <= start) sum = sum + money[i];
+		else {
+			sum = money[i];
+			cnt++;
+		}
+	}
+
+	if (cnt <= M) cout << start;
+	else cout << end;
+	return 0;
+}
