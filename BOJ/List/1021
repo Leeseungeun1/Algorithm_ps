@@ -1,0 +1,72 @@
+/*
+  1021-회전하는 큐
+  이 문제를 해결하기 위해서는 doubled linked list가 필요하다.
+  그래서 STL에서 제공하는 list를 이용하여 문제를 해결하였다.
+  우선 제거하고자하는 값이 list의 맨 처음에 있는지 확인하고, 맨처음에 있다면 바로 제거를 한다.
+  만약 그렇지 않다면, 2번과 3번의 규칙 중 더 이동값이 최소인 규칙을 고른다.
+  그리고 고른 규칙을 적용한 후 list의 제일 첫 node를 다시 제거한다.
+  이런 방식을 반복하며 2번과 3번의 규칙을 적용하는 횟수를 계산한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, M;
+	cin >> N >> M;
+	list<int> arr;
+	vector<int> out(M);
+	for (int i = 0; i < N; i++) {
+		arr.push_back(i + 1);
+	}
+	for (int i = 0; i < M; i++) {
+		cin >> out[i];
+	}
+	
+	ll ans = 0;
+	for (int i = 0; i < M; i++) {
+		if (out[i] != *(arr.begin())) {
+			int index = 1;
+			auto iter = arr.begin();
+			while (*(iter) != out[i]) {
+				index++;
+				iter++;
+			}
+			int front = index - 1;
+			int back = arr.size() - front;
+			if (front <= back) {
+				for (int j = 0; j < front; j++) {
+					int num = arr.front();
+					arr.pop_front();
+					arr.push_back(num);
+					ans++;
+				}
+			}
+			else {
+				for (int j = 0; j < back; j++) {
+					int num = arr.back();
+					arr.pop_back();
+					arr.push_front(num);
+					ans++;
+				}
+			}
+		}
+		arr.pop_front();
+	}
+	cout << ans;
+	return 0;
+}
