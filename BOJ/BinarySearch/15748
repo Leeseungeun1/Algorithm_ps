@@ -1,0 +1,62 @@
+/*
+  15748 - 도토리 숨기기
+  이 문제는 도토리가 위치한 박스의 번호를 탐색하는 문제다.
+  따라서 박스의 최솟값을 탐색하는 최솟값으로 두고, 주어진 박스의 개수를 최댓값으로 둔다.
+  그리고 중간값을 구하여 해당 박스까지 몇 개의 도토리가 있는지 개수를 확인한다.
+  이 때, 개수를 확인하는 방법은 각 규칙마다 해당 박스까지 있는 도토리의 수를 나눗셈을 이용하여 세면 된다.
+  그리고 어떤 특정 박스에는 도토리가 들어있지 않은데, 해당 박스 앞에 있는 도토리의 수가 D개인 경우가 있을 수도 있다.
+  따라서 정확한 답을 출력하기 위해서 해당 박스까지는 도토리가 D개가 있고, 해당 박스 직전 박스까지는 도토리가 D-1개 있는 박스를 구하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll N, K, D;
+	cin >> N >> K >> D;
+
+	vector <pair<pair<ll, ll>, ll>> arr(K);
+	ll start = 2000000;
+	for (int i = 0; i < K; i++) {
+		cin >> arr[i].first.first >> arr[i].first.second >> arr[i].second;
+		start = min(start, arr[i].first.first);
+	}
+	ll end = N;
+	ll answer = N;
+	while (start <= end) {
+		ll mid = (start + end) / 2;
+		ll cnt = 0;
+		ll cnt2 = 0;
+		for (int i = 0; i < K; i++) {
+			if (mid >= arr[i].first.first) {
+				ll last = min(arr[i].first.second, mid);
+				ll num = (last - arr[i].first.first) / arr[i].second + 1;
+				cnt += num;
+			}
+			if (mid - 1 >= arr[i].first.first) {
+				ll last = min(arr[i].first.second, mid - 1);
+				ll num = (last - arr[i].first.first) / arr[i].second + 1;
+				cnt2 += num;
+			}
+		}
+		if (cnt < D) start = mid + 1;
+		else end = mid - 1;
+		
+		if (cnt2<D && D <= cnt) answer = min(answer, mid);
+	}
+	cout << answer;
+
+	return 0;
+}
