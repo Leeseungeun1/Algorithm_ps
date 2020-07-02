@@ -1,0 +1,115 @@
+/*
+  1406-에디터
+  이 문제는 doubled linked list를 이용하는 문제다.
+  제한시간이 0.3초기 때문에 doubled linked list를 이용하기 위해서 list를 사용하게 되면 굉장히 복잡하게 구현을 하거나, 시간초과가 날 것이라고 생각했다.
+  그래서 그냥 직접 doubled linked list를 구현하였다.
+  ptr이 가리키는 node의 앞에 커서가 있다고 가정을 한 뒤에 insert와 erase를 구현하여 문제를 해결하였다.
+  ptr이 가리키는 node의 앞에 커서가 있다고 가정을 했기 때문에 맨 마지막에 커서의 위치만을 표현해주는 empty node가 추가되어 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+typedef struct node {
+	char c;
+	struct node* before;
+	struct node* after;
+}node;
+
+node* head = NULL;
+node* tail = NULL;
+
+void insert(node* before, node* after, char c) {
+	node* newnode = (node*)malloc(sizeof(node));
+	newnode->c = c;
+	newnode->before = NULL;
+	newnode->after = NULL;
+	if (after == head) {
+		head->before = newnode;
+		newnode->after = head;
+		head = newnode;
+	}
+	else {
+		before->after = newnode;
+		newnode->after = after;
+		after->before = newnode;
+		newnode->before = before;
+	}
+}
+
+void erase(node* er) {
+	node* temp = er;
+	(er->after)->before = er->before;
+	if (er == head) {
+		head = er->after;
+	}
+	else {
+		(er->before)->after = er->after;
+	}
+	free(er);
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	string s;
+	list<char> str;
+
+	cin >> s;
+	for (int i = 0; i < s.size(); i++) {
+		node* newnode = (node*)malloc(sizeof(node));
+		newnode->c = s[i];
+		newnode->before = NULL;
+		newnode->after = NULL;
+		if (head == NULL) head = newnode;
+		if (tail != NULL) {
+			tail->after = newnode;
+			newnode->before = tail;
+		}
+		tail = newnode;
+	}
+	node* newnode = (node*)malloc(sizeof(node));
+	newnode->before = tail;
+	newnode->after = NULL;
+	tail->after = newnode;
+	tail = newnode;
+
+	int n;
+	cin >> n;
+
+	node* ptr = tail;
+	for (int i = 0; i < n; i++) {
+		char c;
+		cin >> c;
+		if (c == 'P') {
+			cin >> c;
+			insert(ptr->before, ptr, c);
+		}
+		else if (c == 'L') {
+			if (ptr != head) ptr = ptr->before;
+		}
+		else if (c == 'D') {
+			if (ptr != tail) ptr = ptr->after;
+		}
+		else if (c=='B'){
+			if (ptr != head) erase(ptr->before);
+		}
+	}
+
+	while (head != tail) {
+		cout << head->c;
+		head = head->after;
+	}
+	return 0;
+}
