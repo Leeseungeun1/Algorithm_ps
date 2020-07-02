@@ -1,0 +1,38 @@
+/*
+  n개의 stick이 주어지기 때문에, 많아야 n개의 stick을 가질 수 있다.
+  그런데 각 stick의 개수가 같아야한다는 추가 조건이 주어졌다.
+  예를 들어 1,2,3,4,5의 stick이 주어졌다면, 1+4, 2, 3, 5의 stick이 되면 크기가 5인 stick이 2개가 생성된 것 이다.
+  그런데 2+3을하면 또 크기가 5인 stick이 된다.
+  따라서 이 문제를 해결하기 위해서는 제일 최댓값의 크기로 stick을 만들면 된다.
+  그리고 최대 길이(n)의 stick을 제외한 후, 최대 길이의 stick과 최소 길이의 stick으로 또 하나의 길이가 n인 stick을 만들 수 있다.
+  이렇게 길이가 n이 되도록 만들 수 있는 stick의 묶음은 n-1/2개가 나오게 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	ll n, t;
+	cin >> t;
+	while (t--) {
+		cin >> n;
+		ll ans = 1;
+		ans = ans + (n - 1) / 2;
+		cout << ans << "\n";
+	}
+
+	return 0;
+}
