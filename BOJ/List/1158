@@ -1,0 +1,45 @@
+/*
+  1158-요세푸스 문제
+  해당 문제는 linked list를 이용하여 list node를 삭제하면서 문제를 해결해야한다.
+  하지만 C++의 STL에 vector라는 자료구조가 erase기능을 제공하기 때문에, erase함수를 이용하여 문제를 해결하였다.
+  배열이 존재한다면, K번째 원소를 찾아 해당 원소를 출력한 뒤, 제거한다.
+  그리고 해당 자리부터 다시 K번째 원소를 찾는 과정을 반복하면서 문제를 해결한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	ll N, K;
+	cin >> N >> K;
+	vector<ll> arr(N);
+	for (ll i = 0; i < N; i++) {
+		arr[i] = i + 1;
+	}
+
+	cout << "<";
+	int i = 0;
+	while (!arr.empty()) {
+		int num = (i + K - 1) % arr.size();
+		cout << arr[num];
+		arr.erase(arr.begin() + num);
+		if (!arr.empty()) cout << ", ";
+		i = num;
+	}
+	cout << ">";
+	return 0;
+}
