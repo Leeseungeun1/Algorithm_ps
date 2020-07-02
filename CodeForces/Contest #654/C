@@ -1,0 +1,64 @@
+/*
+  1. v>c인 경우 1번 손님은 vanila를 먹고, 아니면 chocolate을 먹는다.
+  2. v>c인 경우 2번 손님은 chocolate을 먹고, 아니면 vanila를 먹는다.
+  
+  이 규칙에 빗대어 봤을 때, (2,1)의 순서로 묶어서 손님을 들여보내야한다.
+  왜냐하면 v>c인경우, 2번 손님이 오게되면, c를 가져간다. 즉 v>c 부등식에는 변함이 없다.
+  그 다음에 1번 손님이 오게 되면 v를 가져가게 되면서 v>c가 유지가 된다.
+  v<=c인 경우에도 동일하다.
+  그렇기 때문에 (2,1)의 순서로 묶어서 계속 손님을 들이고, 한 묶음 당 vanila와 chocolate을 하나씩 빼는 논리로 문제를 해결하면 된다.
+  
+  만약 둘 중 적은 과자의 종류가 2번 손님의 수보다 적다면, 과자를 못 먹는 2번 손님이 나타날 수 밖에 없다.
+  왜냐하면 항상 2번 손님은 적은 수의 과자를 먼저 선택하기 때문이다.
+  
+  만약 2번 손님이 모두 과자를 가져갔다면, 남은 과자를 모두 1번 손님한테 나누어줄 수 있다.
+  따라서 남은 과자의 수가 남은 1번 손님의 수보다 적게 된다면, 과자를 못 먹는 1번 손님이 나타날 수 밖에 없다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	ll t;
+	cin >> t;
+	
+	while (t--) {
+		ll a, b, n, m;
+		cin >> a >> b >> n >> m;
+		if (a > b) {
+			if (m > b) cout << "No\n";
+			else {
+				a = a - m;
+				b = b - m;
+				n = n - m;
+				if (a + b < n) cout << "No\n";
+				else cout << "Yes\n";
+			}
+		}
+		else {
+			if (m > a) cout << "No\n";
+			else {
+				a = a - m;
+				b = b - m;
+				n = n - m;
+				if (a + b < n)cout << "No\n";
+				else cout << "Yes\n";
+			}
+		}
+	}
+
+	return 0;
+}
