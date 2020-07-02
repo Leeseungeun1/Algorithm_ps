@@ -1,0 +1,62 @@
+/*
+  2840-행운의 바퀴
+  이 문제는 한 방향으로만 인덱싱이 진행되기 때문에 단순 linked list로 문제를 풀 수 있다.
+  하지만 list를 더 잘 다루고 싶고, 또 list로 하면 더 직관적인 풀이가 나올 것 같아서 list를 이용하여 해결했다.
+  우선 행운의 바퀴가 만들어지기 위해서는 두 가지 조건이 필요하다.
+    1) 바퀴에 같은 알파벳이 중복되어 나타나지 않는다.
+    2) 한 자리에는 하나의 알파벳만 나타난다.
+  따라서 우선 칸의 이동 수만큼 list의 node를 뒤에서 앞으로 옮긴다. (시계방향으로 원판이 돌기 때문에 인덱싱은 우->좌로 진행된다.)
+  그리고 입력 된 문자가 들어갈 자리에 다른 알파벳이 있지는 않은지, 그리고 추가적으로 입력 될 문자가 이미 다른 곳에 사용된 문자는 아닌지 확인한다.
+  만약 두 조건 중 하나의 조건에라도 어긋나면 '!'를 출력하고, 그렇지 않으면 회전판에 있는 글자를 차례대로 출력하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+int alpha[100];
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, K;
+	cin >> N >> K;
+	list<char> arr;
+	for (int i = 0; i < N; i++) {
+		arr.push_back('?');
+	}
+
+	bool flag = true;
+	for (int i = 0; i < K; i++) {
+		int n; char c;
+		cin >> n >> c;
+		for (int j = 0; j < n; j++) {
+			arr.push_front(arr.back());
+			arr.pop_back();
+		}
+		auto iter = arr.begin();
+		if ((*iter) == c) continue;
+		if ((*iter) != '?' || alpha[c - 'A'] != 0) flag = false;
+		(*iter) = c;
+		alpha[c - 'A']++;
+	}
+
+	if (flag == false) cout << "!";
+	else {
+		for (auto iter = arr.begin(); iter != arr.end(); iter++) {
+			cout << (*iter);
+		}
+	}
+
+	return 0;
+}
