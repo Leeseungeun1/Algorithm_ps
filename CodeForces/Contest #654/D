@@ -1,0 +1,80 @@
+/*
+  한 칸에 0이 들어갔을 때, 해당 0은 행과 열에 모두 영향을 미치게 된다.
+  따라서 행과 열 각각의 최댓값과 최솟값의 차이를 최소화하기 위해서는 최대한 한 행 또는 열에 0의 수를 적게 배치해야한다.
+  그러기 위해서는 각 대각선부터 시작해서 대각선의 방향으로 0을 채워나가면 된다.
+  
+  이랬을 때, 행에서 1의 최댓값과 최솟값의 차는 1또는 0이다.
+  그리고 행에서 1의 최댓값과 최솟값의 차가 1이 나오게 된다면, 열에서도 1의 최댓값과 최솟값의 차가 1이 나오게 된다.
+  만약 열에서 1의 최댓값과 최솟값의 차가 0이 나오게 된다면, 열에서도 0의 최댓값과 최솟값의 차가 0이 나오게 된다.
+  따라서 함수값은 0 또는 2라는 것을 알 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	ll t;
+	cin >> t;
+	
+	while (t--) {
+		ll n, k;
+		cin >> n >> k;
+		vector<vector<int>> arr(n, vector<int>(n));
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				arr[i][j] = 1;
+			}
+		}
+
+		ll zero = n * n - k;
+		if (zero % n == 0) {
+			cout << "0\n";
+			if (zero != 0) {
+				ll num = zero / n;
+				for (ll i = 0; i < n; i++) {
+					for (ll j = 0; j < num; j++) {
+						arr[i][(i + j) % n] = 0;
+					}
+
+				}
+			}
+			
+		}
+		else {
+			cout << "2\n";
+			ll num = zero / n;
+			ll rest = zero % n;
+			for (ll i = 0; i < rest; i++) {
+				for (ll j = 0; j < num+1; j++) {
+					arr[i][(i + j) % n] = 0;
+				}
+			}
+			for (ll i = rest; i < n; i++) {
+				for (ll j = 0; j < num; j++) {
+					arr[i][(i + j) % n] = 0;
+				}
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				cout << arr[i][j];
+			}
+			cout << "\n";
+		}
+	}
+
+	return 0;
+}
