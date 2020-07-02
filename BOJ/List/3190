@@ -1,0 +1,126 @@
+/*
+  3190-뱀
+  이 문제를 해결하기 위해서는 뱀이 차지하고 있는 좌표의 모음이 필요하다.
+  그리고 가장 최신 좌표를 추가하여 뱀의 길이를 늘리고, 가장 오래된 좌표를 삭제하여 뱀의 길이를 줄여야 하기 때문에
+  doubled linked list가 필요하다.
+  그래서 STL의 list를 이용했다.
+  우선 뱀이 한 칸 전진을 하는데, 해당 좌표에 사과가 있다면 현재 좌표를 뱀이 차지하고있는 좌표의 정보를 저장하고있는 list에 추가 해 준다.
+  만약 사과가 없다면, 현재 좌표를 list에 추가하고 가장 오래 된 좌표를 list에서 제거 해 준다.
+  그리고 각 board에 뱀은 1, 사과는 2, 아무것도 없는 곳이면 0으로 표기를 하고,
+  뱀이 이동했을 때 게임이 끝나는 조건이 충족되는지 여부를 확인한다.
+    [게임이 끝나는 조건]
+      1. 뱀이 전진을 했는데 벽에 부딪히는 경우
+      2. 뱀이 전진을 한 곳에 자신의 몸이 있는 경우
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, K, L;
+	cin >> N;
+	vector<vector<int>> board(N, vector<int>(N));
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			board[i][j] = 0;
+		}
+	}
+	board[0][0] = 1;
+	
+	cin >> K;
+	for (int i = 0; i < K; i++) {
+		int x, y;
+		cin >> x >> y;
+		board[x - 1][y - 1] = 2;
+	}
+
+	cin >> L;
+	vector<pair<int, char>> change(L);
+	for (int i = 0; i < L; i++) {
+		cin >> change[i].first >> change[i].second;
+	}
+
+	int index = 0;
+	int time = 0;
+	bool finish = false;
+	int direction = 1;
+	int x = 0, y = 0;
+	list<pair<int, int>> position;
+	position.push_back({ 0,0 });
+
+	while (!finish) {
+		time++;
+		if (direction == 0) {
+			if (x == 0) {
+				finish = true;
+				continue;
+			}
+			x--;
+		}
+		else if (direction == 1) {
+			if (y == N - 1) {
+				finish = true;
+				continue;
+			}
+			y++;
+		}
+		else if (direction == 2) {
+			if (x == N - 1) {
+				finish = true;
+				continue;
+			}
+			x++;
+		}
+		else if (direction == 3) {
+			if (y == 0) {
+				finish = true;
+				continue;
+			}
+			y--;
+		}
+		if (board[x][y] == 1) {
+			finish = true;
+			continue;
+		}
+		else if (board[x][y] == 0) {
+			int a = position.front().first;
+			int b = position.front().second;
+			board[a][b] = 0;
+			position.pop_front();
+		}
+		board[x][y] = 1;
+		position.push_back({ x,y });
+		if (index < L && time == change[index].first) {
+			if (change[index].second == 'L') {
+				if (direction == 0) direction = 3;
+				else if (direction == 3) direction = 2;
+				else if (direction == 2) direction = 1;
+				else if (direction == 1) direction = 0;
+			}
+			else {
+				if (direction == 0) direction = 1;
+				else if (direction == 1) direction = 2;
+				else if (direction == 2) direction = 3;
+				else if (direction == 3) direction = 0;
+			}
+			index++;
+		}
+	}
+	
+	cout << time;
+	return 0;
+}
