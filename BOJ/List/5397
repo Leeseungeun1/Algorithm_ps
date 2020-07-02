@@ -1,0 +1,110 @@
+/*
+  5397-키로거
+  이 문제는 시작되는 문장이 없을 뿐 1406과 동일한 문제다.
+  조금 더 효율적인 시간 안에 해당 문제를 해결하기 위해서 직접 doubled linked list를 구현하였다.
+  그리고 시작할 때, 커서의 위치를 나타내는 empty node를 하나 설정한 후
+  특수기호의 기능에 알맞게 포인터를 왼쪽, 또는 오른쪽으로 옮기거나 왼쪽에 있는 문자를 제거하는 작업을 수행하였다.
+  그리고 문자를 추가하거나 제거하는 작업 역시 직접 erase와 insert function을 구현하여 해결하였다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+typedef struct node {
+	char c;
+	struct node* before;
+	struct node* after;
+}node;
+
+node* head = NULL;
+node* tail = NULL;
+
+void insert(node* before, node* after, char c) {
+	node* newnode = (node*)malloc(sizeof(node));
+	newnode->c = c;
+	newnode->before = NULL;
+	newnode->after = NULL;
+	if (after == head) {
+		head->before = newnode;
+		newnode->after = head;
+		head = newnode;
+	}
+	else {
+		before->after = newnode;
+		newnode->after = after;
+		after->before = newnode;
+		newnode->before = before;
+	}
+}
+
+void erase(node* er) {
+	node* temp = er;
+	(er->after)->before = er->before;
+	if (er == head) {
+		head = er->after;
+	}
+	else {
+		(er->before)->after = er->after;
+	}
+	free(er);
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		node* newnode = (node*)malloc(sizeof(node));
+		newnode->before = tail;
+		newnode->after = NULL;
+		tail = newnode;
+		head = newnode;
+
+		string s;
+		cin >> s;
+
+		node* ptr = tail;
+		for (int i = 0; i < s.size(); i++) {
+			char c = s[i];
+			if (c == '<') {
+				if (ptr != head) ptr = ptr->before;
+			}
+			else if (c == '>') {
+				if (ptr != tail) ptr = ptr->after;
+			}
+			else if (c == '-') {
+				if (ptr != head) erase(ptr->before);
+			}
+			else {
+				insert(ptr->before, ptr, c);
+			}
+		}
+		
+		while (head != tail) {
+			cout << head->c;
+			head = head->after;
+		}
+		cout << "\n";
+		while (head != NULL) {
+			node* temp = head;
+			head = head->after;
+			free(temp);
+		}
+		head = NULL;
+		tail = NULL;
+	}
+
+	return 0;
+}
