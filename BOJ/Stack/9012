@@ -1,0 +1,49 @@
+/*
+  9012-괄호
+  이 문제를 해결하기 위해서는 다음과 같은 루틴을 사용한다.
+    1) 열린 괄호가 나오면 stack에 쌓는다.
+    2) 닫힌 괄호가 나오면 stack의 top에 열린 괄호가 있는 경우, stack을 pop한다.
+  다음과 같은 경우는 짝이 맞지 않는 괄호다.
+    1) 열린괄호가 없는데 닫힌 괄호가 나오는 경우
+    2) 괄호를 모두 읽었는데, 괄호를 쌓는 stack이 비어있지 않은 경우
+  따라서 다음의 두 경우가 나올 때는  NO를 출력하고, 그렇지 않으면 YES를 출력한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N;
+	cin >> N;
+	while (N--) {
+		string s;
+		cin >> s;
+		stack<char> st;
+		bool flag = true;
+		for (int i = 0; i < s.size(); i++) {
+			if (flag == false) break;
+			if (s[i] == '(') st.push(s[i]);
+			else {
+				if (!st.empty()&&st.top() == '(') st.pop();
+				else flag = false;
+			}
+		}
+		if (flag && st.empty()) cout << "YES\n";
+		else cout << "NO\n";
+	}
+	return 0;
+}
