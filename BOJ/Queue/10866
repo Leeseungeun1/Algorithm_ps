@@ -1,0 +1,76 @@
+/*
+  10866-덱
+  dequeue의 기능 사용과 관련된 문제다.
+  STL의 dequeue에서 제공되는 push_front, push_back, pop_front, pop_back, size, empty, front, back기능을 이용하여
+  string으로 들어오는 명령어에 맞게 각 기능을 수행 해 주면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	deque<int> de;
+	while (t--) {
+		string str;
+		cin >> str;
+		if (str == "push_front") {
+			int n;
+			cin >> n;
+			de.push_front(n);
+		}
+		else if (str == "push_back") {
+			int n;
+			cin >> n;
+			de.push_back(n);
+		}
+		else if (str == "pop_front") {
+			if (de.empty()) cout << "-1\n";
+			else {
+				cout << de.front()<<"\n";
+				de.pop_front();
+			}
+		}
+		else if (str == "pop_back") {
+			if (de.empty()) cout << "-1\n";
+			else {
+				cout << de.back() << "\n";
+				de.pop_back();
+			}
+		}
+		else if (str == "size") {
+			if (de.empty()) cout << "0\n";
+			else cout << de.size() << "\n";
+		}
+		else if (str == "empty") {
+			if (de.empty()) cout << "1\n";
+			else cout << "0\n";
+		}
+		else if (str == "front") {
+			if (de.empty()) cout << "-1\n";
+			else cout << de.front() << "\n";
+		}
+		else if (str == "back") {
+			if (de.empty()) cout << "-1\n";
+			else cout << de.back() << "\n";
+		}
+	}
+	return 0;
+}
