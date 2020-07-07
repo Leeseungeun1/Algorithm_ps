@@ -1,0 +1,62 @@
+/*
+  10845-큐
+  STL의 queue에서 제공되는 push, pop, front, back, empty, size 기능을 이용하여,
+  입력되는 string에 알맞게 각 기능을 수행 해 주면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	queue<int> q;
+	while (t--) {
+		string str;
+		cin >> str;
+		if (str == "push") {
+			int n;
+			cin >> n;
+			q.push(n);
+		}
+		else if (str == "pop") {
+			if (q.empty()) cout << "-1\n";
+			else {
+				cout << q.front() << "\n";
+				q.pop();
+			}
+		}
+		else if (str == "size") {
+			if (q.empty()) cout << "0\n";
+			else cout << q.size() << "\n";
+		}
+		else if (str == "empty") {
+			if (q.empty()) cout << "1\n";
+			else cout << "0\n";
+		}
+		else if (str == "front") {
+			if (q.empty()) cout << "-1\n";
+			else cout << q.front() << "\n";
+		}
+		else if (str == "back") {
+			if (q.empty()) cout << "-1\n";
+			else cout << q.back() << "\n";
+		}
+	}
+	return 0;
+}
