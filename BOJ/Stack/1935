@@ -1,0 +1,73 @@
+/*
+  1935-후위표기식2
+  피연산자가 나오면 stack에 push를 한다.
+  그리고 연산자가 나오면 stack에서 두 피연산자를 뽑아 연산자에 맞게 연산을 한 뒤,
+  연산 결과를 stack에 push한다.
+  계산이 완료되면 stack에 한개의 값이 남는데, 이 값이 연산의 최종 결과가 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int alpha[30];
+int main() {
+	//ios_base::sync_with_stdio(0);
+	//cin.tie(0);
+	//cout.tie(0);
+
+	int n;
+	cin >> n;
+	string str;
+	cin >> str;
+	for (int i = 0; i < n; i++) {
+		cin >> alpha[i];
+	}
+
+	stack<double> s;
+	for (int i = 0; i < str.size(); i++) {
+		if (str[i] == '*') {
+			double second = s.top();
+			s.pop();
+			double first = s.top();
+			s.pop();
+			s.push(first * second);
+		}
+		else if (str[i] == '+') {
+			double second = s.top();
+			s.pop();
+			double first = s.top();
+			s.pop();
+			s.push(first + second);
+		}
+		else if (str[i] == '-') {
+			double second = s.top();
+			s.pop();
+			double first = s.top();
+			s.pop();
+			s.push(first - second);
+		}
+		else if (str[i] == '/') {
+			double second = s.top();
+			s.pop();
+			double first = s.top();
+			s.pop();
+			s.push(first / second);
+		}
+		else {
+			s.push(alpha[str[i] - 'A']);
+		}
+	}
+	double ans = s.top();
+	printf("%.2f", ans);
+	return 0;
+}
