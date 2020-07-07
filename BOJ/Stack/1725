@@ -1,0 +1,64 @@
+/*
+  1725-히스토그램
+  이 문제를 해결하기 위해서는 다음과 같은 규칙을 사용한다.
+    1) stack이 비어있거나 stack의 top값보다 현재 들어오는 값이 크면 현재 들어오는 값을 push한다.
+    2) 1)의 경우가 아니면, 현재 들어오는 값이 stacck의 top값보다 클 때까지 stack을 pop한다.
+       stack을 pop하는 경우에는 각각의 stack top값으로 인해 생성되는 직사각형의 넓이를 구한다.
+  이 규칙을 따르면 항상 stack에는 오름차순으로 값이 쌓이게 된다.
+  2)의 경우에 stack의 top에 있는 막대그래프의 위치와, stack의 top 밑에 있는 막대그래프의 위치를 이용하여 밑변을 구할 수 있다.
+  만약 stack의 size가 1인 경우라면, 지금까지 구한 막대그래프가 모두 stack의 top의 값보다 크거나 같다는 뜻이므로, 현재 위치를 이용하여 밑변을 구할 수 있다.
+  위의 문구가 성립하는 이유는, 항상 stack의 top이 들어오는 값보다 작으면 stack의 top이 들어오는 값보다 커질 때 까지 stack pop을 시켜주기 때문이다.
+  이러한 과정을 반복하여 직사각형의 maximum값을 갱신하면 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll n;
+	cin >> n;
+	vector<ll> arr(n);
+	for (ll i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+
+	stack<pair<ll,ll>> s;
+	ll maximum = 0;
+	for (ll i = 0; i < n; i++) {
+		if (s.empty() || s.top().second < arr[i]) s.push({ i,arr[i] });
+		else {
+			while (!s.empty() && s.top().second >= arr[i]) {
+				ll first = s.top().first;
+				ll second = s.top().second;
+				s.pop();
+				if (!s.empty()) maximum = max(maximum, second * (i - s.top().first - 1));
+				else maximum = max(maximum, second * i);
+			}
+			s.push({ i,arr[i] });
+		}
+	}
+	
+	while (!s.empty()) {
+		ll first = s.top().first;
+		ll second = s.top().second;
+		s.pop();
+		if (!s.empty()) maximum = max(maximum, second * (n - s.top().first - 1));
+		else maximum = max(maximum, second * n);
+	}
+	cout << maximum;
+	return 0;
+}
