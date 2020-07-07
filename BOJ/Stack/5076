@@ -1,0 +1,70 @@
+/*
+  5076-Web Pages
+  이 문제는 3986번 문제와 유사한 문제다.
+  열린 태그가 나오면 stack에 push한다.
+  그리고 닫힌 태그가 나오면 stack의 top과 비교하여, 동일하면 pop을하고, 동일하지 않으면 에러를 출력한다.
+  만약 열린 태그가 나오지 않은채로 닫힌 태그가 먼저 나와도 에러를 출력한다.
+  그리고 열린태그와 닫힌 태그가 동시에 사용되었는지 여부를 확인하기 위해서 '>'바로 앞에 '/'가 있는지 여부를 확인한다.
+  그리고 만약 '/'가 있다면, 동시에 사용된 것 이므로 그냥 넘어간다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	while (1) {
+		char str[300];
+		cin.getline(str, 300);
+		if (strcmp("#", str) == 0) break;
+		stack<string> s;
+		bool wrong = false;
+		for (int i = 0; i < strlen(str); i++) {
+			if (wrong) break;
+			if (str[i] == '<') {
+				int end = i;
+				int start = i;
+				while (str[end] != '>') {
+					end++;
+				}
+				if (str[end - 1] == '/') continue;
+				string add = "";
+				if (str[start + 1] == '/') {
+					start = start + 2;
+					while (start != end && str[start] != ' ') {
+						add = add + str[start];
+						start++;
+					}
+					if (!s.empty() && s.top() == add) s.pop();
+					else wrong = true;
+				}
+				else {
+					start = start + 1;
+					while (start != end && str[start] != ' ') {
+						add = add + str[start];
+						start++;
+					}
+					s.push(add.c_str());
+				}
+			}
+		}
+		if (wrong == true || !s.empty()) cout << "illegal\n";
+		else cout << "legal\n";
+	}
+
+	return 0;
+}
