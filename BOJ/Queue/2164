@@ -1,0 +1,42 @@
+/*
+  2164-카드2
+  queue의 앞부분을 카드 뭉치의 윗부분, queue의 뒷부분을 카드 뭉치의 아랫부분이라고 가정하여 문제를 해결할 수 있다.
+  맨 위의 카드를 우선 버려야하므로 queue.pop(), 그리고 맨 위에 있는 카드를 맨 밑으로 보내야하므로 queue.push(queue.pop())이 수행된다.
+  그리고 맨 밑으로 보낸 카드는 이제 카드 뭉치의 윗쪽에 존재하지 않으므로 queue.pop()을 수행한다.
+  카드가 한 장 남을 때 까지 이 과정을 수행하면 문제에서 요구하는 과정과 똑같이 수행하는 것 이다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n;
+	cin >> n;
+	queue<int> q;
+	for (int i = 1; i <= n; i++) {
+		q.push(i);
+	}
+	while (q.size() != 1) {
+		q.pop();
+		q.push(q.front());
+		q.pop();
+	}
+	cout << q.front();
+
+	return 0;
+}
