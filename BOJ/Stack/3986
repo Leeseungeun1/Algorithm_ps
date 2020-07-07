@@ -1,0 +1,45 @@
+/*
+  3986-좋은 단어
+  좋은 단어를 찾기 위해서는 stack을 이용하여 문자를 쌓는데,
+  stack의 top과 일치하는 문자가 그 다음에 나오면, stack을 pop하고
+  그렇지 않으면 다시 stack에 들어오는 문자를 push한다.
+  
+  만약에 입력 string을 다 살핀 후에 stack이 비어있다면, 좋은 단어가 되는 것이고
+  그렇지 않다면 cross되는 아치가 있다는 뜻이므로 좋은 단어가 아니게 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	int ans = 0;
+	while (t--) {
+		string str;
+		cin >> str;
+		stack<char> s;
+		for (int i = 0; i < str.size(); i++) {
+			if (s.empty() || s.top() != str[i]) s.push(str[i]);
+			else s.pop();
+		}
+		if (s.empty())ans++;
+	}
+
+	cout << ans;
+	return 0;
+}
