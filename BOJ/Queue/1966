@@ -1,0 +1,59 @@
+/*
+  1966-프린터 큐
+  큐에 문서들을 차레대로 입력하고, 우선순위도 따로 배열에 저장한다.
+  우선 우선순위를 저장해 둔 배열을 정렬하여 우선순위에 맞게 문서를 출력할 준비를 한다.
+  그리고 우선순위가 높은 순서를 확인하면서, 우선 순위가 낮은 앞에있는 문서는 다시 큐의 뒤로 보내고 우선순위가 높은 문서를 바로 출력한다.
+  이 과정을 그대로 queue를 이용하여 구현하면서, 원하는 문서의 출력 순서를 파악하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int n, m;
+		cin >> n >> m;
+		queue<pair<int, int>> q;
+		vector<int> priority;
+		for (int i = 0; i < n; i++) {
+			int num;
+			cin >> num;
+			q.push({ i, num });
+			priority.push_back(num);
+		}
+		sort(priority.begin(), priority.end());
+
+		int cnt = 0;
+		bool findflag = false;
+		while (1) {
+			if (findflag) break;
+			while (q.front().second != priority[priority.size() - 1]) {
+				q.push(q.front());
+				q.pop();
+			}
+			if (q.front().first == m) findflag = true;
+			priority.erase(priority.end() - 1);
+			q.pop();
+			cnt++;
+		}
+		cout << cnt<<"\n";
+	}
+	return 0;
+}
