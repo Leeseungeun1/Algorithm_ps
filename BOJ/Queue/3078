@@ -1,0 +1,49 @@
+/*
+  3078-좋은 친구
+  각 사람마다 차이가 K등수 이하면서 이름의 길이가 같은사람을 일일이 찾는다면 O(N^2)의 시간복잡도가 나오게 된다.
+  따라서 시간 복잡도를 O(N)으로 줄이기 위해서 queue를 이용해야한다.
+  각 이름의 길이 마다 queue를 생성한다.
+  그리고 queue가 비어있으면, 그냥 현재 보고있는 사람의 등수를 queue에 push한다.
+  만약 queue가 비어있지 않다면, 현재 보고있는 사람의 등수와 queue의 front에 있는 사람의 등수가 K이하로 차이가 날 때까지 queue를 pop해준다.
+  이 과정을 거치면, 해당 사람의 이름의 길이에 해당하는 queue에는 현재 보고있는 사람과 K등수 이하 차이가 남는 사람들만 남아있다.
+  따라서 queue에 남아있는 사람의 수를 count해준 뒤, queue에 현재 보고있는 사람의 등수를 추가로 push 해 준다.
+  이런 flow를 통해 좋은 친구의 쌍을 구할 수 있게 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	ll n, k;
+	cin >> n >> k;
+	vector<queue<int>> name(21);
+	ll cnt = 0;
+	for (ll i = 1; i <= n; i++) {
+		string str;
+		cin >> str;
+		ll size = str.size();
+		if (name[size].empty()) name[size].push(i);
+		else {
+			while (!name[size].empty() && name[size].front() + k < i) name[size].pop();
+			if(!name[size].empty())cnt = cnt + name[size].size();
+			name[size].push(i);
+		}
+	}
+	cout << cnt;
+	return 0;
+}
