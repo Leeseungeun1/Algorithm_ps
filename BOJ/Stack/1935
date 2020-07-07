@@ -4,6 +4,7 @@
   그리고 연산자가 나오면 stack에서 두 피연산자를 뽑아 연산자에 맞게 연산을 한 뒤,
   연산 결과를 stack에 push한다.
   계산이 완료되면 stack에 한개의 값이 남는데, 이 값이 연산의 최종 결과가 된다.
+  이 때, 정확한 결과를 내기 위해서 데이터 타입을 float이 아니라 double로 해 주어야 한다.
 */
 #include <iostream>
 #include <algorithm>
