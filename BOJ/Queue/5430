@@ -1,0 +1,94 @@
+/*
+  5430-AC
+  우선 양 끝에서 pop과정이 진행될 수 있도록 dequeue를 이용한다.
+  배열이 string으로 들어오게 되면, 해당 string을 parsing하여 각 숫자를 dequeue에 push한다.
+  그리고 R이 나오면 pop되는 곳을 바꾸고, D가 되면 pop을 시킨다.
+  이 때, 빈 덱에서 pop을 시도하면 에러를 출력한다.
+  연산이 마무리가 되면 덱에 남아 있는 수를 모두 출력한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+void str_to_deque(string number, deque<int>& de) {
+	int ten = 1;
+	int num = 0;
+	for (int i = number.size() - 1; i >= 0; i--) {
+		if ('0' <= number[i] && number[i] <= '9') {
+			num = num + (number[i] - '0') * ten;
+			ten = ten * 10;
+		}
+		else {
+			if (num != 0) de.push_front(num);
+			num = 0;
+			ten = 1;
+		}
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		string str;
+		cin >> str;
+		int num;
+		cin >> num;
+		string number;
+		cin >> number;
+		deque<int> de;
+		str_to_deque(number, de);
+
+		bool normal = true;
+		bool error = false;
+		for (int i = 0; i < str.size(); i++) {
+			if (error) break;
+			if (str[i] == 'R') normal = !normal;
+			else {
+				if (de.empty()) error = true;
+				else {
+					if (normal) {
+						de.pop_front();
+					}
+					else de.pop_back();
+				}
+			}
+		}
+		if (error) cout << "error\n";
+		else {
+			cout << "[";
+			if (normal) {
+				while (!de.empty()) {
+					cout << de.front();
+					de.pop_front();
+					if (!de.empty()) cout << ",";
+				}
+			}
+			else {
+				while (!de.empty()) {
+					cout << de.back();
+					de.pop_back();
+					if (!de.empty()) cout << ",";
+				}
+			}
+            cout<<"]\n";
+		}
+	}
+	return 0;
+}
