@@ -1,0 +1,64 @@
+/*
+  10552-DOM
+  이 문제를 해결하기 위해서는 DFS를 이용해야한다.
+  왜냐하면, 어떤 특정 채널로 변경했을 때, 해당 채널을 싫어하는 사람이 있는지 여부를 확인하고 다시 채널을 변경하는 과정이 '연쇄적으로' 일어나기 때문이다.
+  따라서 channel 번호를 기준으로 adjacent list를 만든다.
+  adjacent list에는 특정 채널을 싫어하는 사람이 있을 때, 그 사람이 좋아하는 채널들을 list에 추가한다.
+  따라서 싫어하는 사람이 어떤 채널로 변경하는지 확인하고, 변경 된 채널에서 또 다른 채널로 변경할 사람이 없는지 여부를 확인 해 가면서 문제를 해결할 수 있다.
+  그리고 무한번으로 계속 채널을 변경해야 하는 경우는 채널을 변경하는 과정에서 cycle이 생기는 경우다.
+  따라서 cycle을 찾는다면, 모두가 만족할 수 있는 채널로 변경할 수 없다는 것으로 처리하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int cnt = 0;
+bool possible = true;
+void dfs(vector<vector<int>>& channel, vector<bool>& visited, int c) {
+	visited[c] = true;
+	if (channel[c].empty()) return;
+
+	cnt++;
+	int next = channel[c][0];
+	if(visited[next]==false) dfs(channel, visited, next);
+	else {
+		possible = false;
+		return;
+	}
+	return;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, m, p;
+	cin >> n >> m >> p;
+	vector<vector<int>> channel(m + 1);
+	vector<bool> visited(m + 1);
+	for (int i = 0; i < n; i++) {
+		int f, h;
+		cin >> f >> h;
+		channel[h].push_back(f);
+	}
+	for (int i = 0; i < m+1; i++)visited[i] = false;
+
+	dfs(channel, visited, p);
+	if (possible) cout << cnt;
+	else cout << "-1";
+
+	return 0;
+}
