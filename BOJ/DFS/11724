@@ -1,0 +1,63 @@
+/*
+  11724-연결 요소의 개수
+  이 문제를 DFS를 이용하여 풀게 되면, 우선 한 정점을 잡고 그 정점을 시작으로 갈 수 있는 모든 정점을 방문한다.
+  그리고 다시 다른 방문하지 않은 정점들을 살펴보면서 동일한 과정을 반복한다.
+  이 때, 다른 방문하지 않은 정점을 시작으로 갈 수 있는 모든 정점들을 파악하는 경우가 하나의 연결 요소 그래프를 의미하므로
+  이 경우마다 연결 요소 그래프의 수를 세 주면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+void dfs(vector<vector<int>>& arr, vector<bool>& visited, int num) {
+	visited[num] = true;
+
+	bool flag = false;
+	for (auto n : arr[num]) {
+		if (visited[n] == false) {
+			dfs(arr, visited, n);
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int n, m;
+	cin >> n >> m;
+
+	vector<vector<int>> arr(n + 1);
+	for (int i = 0; i < m; i++) {
+		int s, e;
+		cin >> s >> e;
+		arr[s].push_back(e);
+		arr[e].push_back(s);
+	}
+	
+	vector<bool> visited(n + 1);
+	for (int i = 0; i < n + 1; i++) visited[i] = false;
+
+	int cnt = 0;
+	for (int i = 1; i < n + 1; i++) {
+		if (visited[i] == false) {
+			cnt++;
+			dfs(arr, visited, i);
+		}
+	}
+	
+	cout << cnt;
+	return 0;
+}
