@@ -1,0 +1,84 @@
+/*
+  2583-영역 구하기
+  이 문제는 좌표 내에서 연결 요소 그래프를 찾고, 각 연결 요소 그래프의 크기를 출력하는 문제다.
+  다만 선택되는 영역이 꼭짓점의 정보로 주어지기 때문에, 이를 고려하여 문제를 해결해야한다.
+  모든 정점들을 살피면서, 만약 방문하지 않은 정점이 있다면, 해당 정점을 시작으로하는 연결 요소 그래프를 찾는다.
+  이 과정을 반복하면서 좌표 내에 존재하는 모든 연결 요소 그래프를 찾으면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+
+int dfs(vector<vector<int>>& arr, vector<vector<bool>>& visited, int x, int y, int row, int col) {
+	visited[x][y] = true;
+
+	int ret = 1;
+	for (int i = 0; i < 4; i++) {
+		if (0 <= x + dx[i] && x + dx[i] < row && 0 <= y + dy[i] && y + dy[i] < col) {
+			if (visited[x + dx[i]][y + dy[i]] == false && arr[x + dx[i]][y + dy[i]] == 0) {
+				ret = ret + dfs(arr, visited, x + dx[i], y + dy[i], row, col);
+			}
+		}
+	}
+	return ret;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	
+	int m, n, k;
+	cin >> m >> n >> k;
+	
+	vector<vector<int>> arr(n, vector<int>(m));
+	vector<vector<bool>> visited(n, vector<bool>(m));
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			arr[i][j] = 0;
+			visited[i][j] = false;
+		}
+	}
+
+	while (k--) {
+		int x1, y1, x2, y2;
+		cin >> x1 >> y1 >> x2 >> y2;
+		for (int i = x1; i < x2; i++) {
+			for (int j = y1; j < y2; j++) {
+				arr[i][j] = 1;
+			}
+		}
+	}
+
+	vector<int> ans;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (arr[i][j] == 0 && visited[i][j] == false) {
+				ans.push_back(dfs(arr, visited, i, j, n, m));
+			}
+		}
+	}
+
+	sort(ans.begin(), ans.end());
+	cout << ans.size() << "\n";
+	for (int i = 0; i < ans.size(); i++) {
+		cout << ans[i] << " ";
+	}
+	return 0;
+}
