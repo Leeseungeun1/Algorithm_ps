@@ -1,0 +1,78 @@
+/*
+  2468-안전영역
+  이 문제는 안전영역의 개수를 구하는 문제로, 연결 요소 그래프의 개수를 구하는 문제와 동일한 원리로 해결할 수 있다.
+  안전한 높이를 기준으로 하여, 안전한 부분의 영역의 개수를 연결 요소 그래프 개수를 구하는 방식을 이용하여 구하고,
+  여러 높이를 기준으로 했을 때, 안전 영역의 최댓값을 구하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+
+void dfs(vector<vector<int>>& arr, vector<vector<bool>>& visited, int num, int x, int y, int n) {
+	visited[x][y] = true;
+
+	for (int i = 0; i < 4; i++) {
+		if (0 <= x + dx[i] && x + dx[i] < n && 0 <= y + dy[i] && y + dy[i] < n) {
+			if (arr[x + dx[i]][y + dy[i]] > num && visited[x + dx[i]][y + dy[i]] == false) {
+				dfs(arr, visited, num, x + dx[i], y + dy[i], n);
+			}
+		}
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n;
+	cin >> n;
+	vector<vector<int>> arr(n, vector<int>(n));
+	vector<vector<bool>> visited(n, vector<bool>(n));
+	int maximum = 0;
+	int minimum = 987654321;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> arr[i][j];
+			minimum = min(minimum, arr[i][j]);
+			maximum = max(maximum, arr[i][j]);
+			visited[i][j] = false;
+		}
+	}
+
+	minimum = minimum - 1;
+	int ans = 0;
+	for (int num = minimum; num <= maximum; num++) {
+		int cnt = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (arr[i][j] > num && visited[i][j] == false) {
+					cnt++;
+					dfs(arr, visited, num, i, j, n);
+				}
+			}
+		}
+		ans = max(ans, cnt);
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++)visited[i][j] = false;
+		}
+	}
+
+	cout << ans;
+	return 0;
+}
