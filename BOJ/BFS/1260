@@ -1,0 +1,79 @@
+/*
+  1260-DFS와 BFS
+  DFS와 BFS의 구현 가능 여부를 는 문제다.
+  DFS는 재귀 방식으로, BFS는 queue를 이용하여 구현하였다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+void dfs(vector<vector<int>>& arr, vector<bool>& visited, int n) {
+	visited[n] = true;
+	cout << n << " ";
+
+	for (auto num : arr[n]) {
+		if (visited[num] == false) {
+			dfs(arr, visited, num);
+		}
+	}
+}
+
+void bfs(vector<vector<int >> &arr, vector<bool>& visited, queue<int>& q) {
+	while (!q.empty()) {
+		int size = q.size();
+		for (int i = 0; i < size; i++) {
+			int num = q.front();
+			cout << num << " ";
+			q.pop();
+			for (auto n : arr[num]) {
+				if (visited[n] == false) {
+					visited[n] = true;
+					q.push(n);
+				}
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, m, v;
+	cin >> n >> m >> v;
+	vector<vector<int>> arr(n + 1);
+	vector<bool> visited(n + 1);
+	while (m--) {
+		int a, b;
+		cin >> a >> b;
+		arr[a].push_back(b);
+		arr[b].push_back(a);
+	}
+	for (int i = 0; i < n + 1; i++) {
+		visited[i] = false;
+		if (!arr[i].empty()) {
+			sort(arr[i].begin(), arr[i].end());
+		}
+	}
+	queue<int> q;
+	q.push(v);
+
+	dfs(arr, visited, v);
+	cout << "\n";
+	for (int i = 0; i < n + 1; i++) visited[i] = false;
+	visited[v] = true;
+	bfs(arr, visited, q);
+	return 0;
+}
