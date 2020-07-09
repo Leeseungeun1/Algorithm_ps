@@ -1,0 +1,68 @@
+/*
+  2644-촌수계산
+  이 문제는 한 사람으로부터 다른 사람으로까지 최단 거리를 구하는 문제다.
+  'README.md'를 참고하면, BFS를 이용하면 k단계에 방문하는 node와 시작점까지의 최단 거리가 k라는 것을 알 수 있다.
+  따라서 한 사람을 시작점으로 하여, 다른 사람을 방문하는 단계가 몇 단계인지 찾으면
+  문제에서 요구하는 촌수를 구할 수 있게 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int ans = -1;
+void bfs(vector<vector<int >> &arr, vector<bool>& visited, queue<int>& q, int y) {
+	int cnt = 0;
+	while (!q.empty()) {
+		int size = q.size();
+		cnt++;
+		for (int i = 0; i < size; i++) {
+			int num = q.front();
+			if (num == y) ans = cnt - 1;
+			q.pop();
+			for (auto n : arr[num]) {
+				if (visited[n] == false) {
+					visited[n] = true;
+					q.push(n);
+				}
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, x, y, m;
+	cin >> n >> x >> y >> m;
+	vector<vector<int>> arr(n + 1);
+	vector<bool> visited(n + 1);
+	while (m--) {
+		int a, b;
+		cin >> a >> b;
+		arr[a].push_back(b);
+		arr[b].push_back(a);
+	}
+	for (int i = 0; i < n + 1; i++) {
+		visited[i] = false;
+	}
+	queue<int> q;
+	q.push(x);
+	visited[x] = true;
+	
+	bfs(arr, visited, q, y);
+	cout << ans;
+	return 0;
+}
