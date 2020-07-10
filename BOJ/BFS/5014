@@ -1,0 +1,68 @@
+/*
+  5014-스타트링크
+  강호가 갈 수 있는 곳을 BFS로 파악하면 이 문제를 해결할 수 있다.
+  강호가 움직일 수 있는 방법은 +U, -D 두 가지 방법 뿐이다.
+  따라서 현재 강호의 위치부터 몇 층으로 움직일 수 있는지를 파악하고, 현재 위치가 면접장인지 파악하는 방법을 통해서 문제를 해결할 수 있다.
+  k단계에서 파악하는 위치는 강호가 k번의 이동으로 도달할 수 있는 층을 의미한다.
+  따라서 강호가 목적지에 도달했을 때가 몇 단계인지 파악하여 강호가 면접장에 도달하기 위해서 움직이는 횟수를 알 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int bfs(vector<bool>& visited, int F, int S, int G, int U, int D) {
+	visited[S] = true;
+	queue<int> q;
+	q.push(S);
+	int move[2] = { U, -D };
+	
+	bool ret = false;
+	int cnt = 0;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			int cur = q.front();
+			q.pop();
+			if (cur == G) ret = true;
+			for (int i = 0; i < 2; i++) {
+				if (1 <= cur + move[i] && cur + move[i] <= F) {
+					if (visited[cur + move[i]] == false) {
+						visited[cur + move[i]] = true;
+						q.push(cur + move[i]);
+					}
+				}
+			}
+		}
+		if (ret) break;
+		cnt++;
+	}
+	if (ret) return cnt;
+	else return -1;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int F, S, G, U, D;
+	cin >> F >> S >> G >> U >> D;
+	vector<bool> visited(F + 1);
+	for (int i = 0; i < F + 1; i++) visited[i] = false;
+	
+	int res = bfs(visited, F, S, G, U, D);
+	if (res != -1) cout << res;
+	else cout << "use the stairs";
+	return 0;
+}
