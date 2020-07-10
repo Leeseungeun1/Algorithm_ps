@@ -1,0 +1,98 @@
+/*
+  6593-상범 빌딩
+  이 문제는 BFS를 3차원으로 구현하여 해결하는 문제다.
+  2차원 좌표에서는 한 점에서 다른 점으로 이동하는 방법에는 최대 4가지 경우가 있었는데,
+  3차원 좌표에서는 z좌표가 추가되어 한 점에서 다른 점으로 이동하는 방법에 최대 6가지 경우로 늘어난다.
+  이렇게 z좌표를 고려하여 BFS를 구현하면 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int minutes = 0;
+int dx[6] = { -1,0,0,1,0,0 };
+int dy[6] = { 0,0,-1,0,0,1 };
+int dz[6] = { 0,1,0,0,-1,0 };
+
+int startx, starty, startz;
+int endx, endy, endz;
+bool bfs(vector<vector<vector<char>>>& arr, vector<vector<vector<bool>>>& visited, int xl, int yl, int zl) {
+	visited[startx][starty][startz] = true;
+	queue<pair<int, pair<int, int>>> q;
+	q.push({ startx, {starty, startz} });
+
+	int cnt = 0;
+	int ret = false;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			int x = q.front().first;
+			int y = q.front().second.first;
+			int z = q.front().second.second;
+			q.pop();
+			if (x == endx && y == endy && z == endz) {
+				ret = true;
+				minutes = cnt;
+			}
+			for (int i = 0; i < 6; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < xl && 0 <= y + dy[i] && y + dy[i] < yl && 0 <= z + dz[i] && z + dz[i] < zl) {
+					if (visited[x + dx[i]][y + dy[i]][z + dz[i]] == false && (arr[x + dx[i]][y + dy[i]][z + dz[i]] == '.'|| arr[x + dx[i]][y + dy[i]][z + dz[i]] == 'E')) {
+						visited[x + dx[i]][y + dy[i]][z + dz[i]] = true;
+						q.push({ x + dx[i], {y + dy[i], z + dz[i]} });
+					}
+				}
+			}
+		}
+		cnt++;
+	}
+	return ret;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int L, R, C;
+	while (1) {
+		cin >> L >> R >> C;
+		if (L == 0 && R == 0 && C == 0) break;
+		vector<vector<vector<char>>> arr(L, vector<vector<char>>(R, vector<char>(C)));
+		vector<vector<vector<bool>>> visited(L, vector<vector<bool>>(R, vector<bool>(C)));
+
+		for (int i = 0; i < L; i++) {
+			for (int j = 0; j < R; j++) {
+				for (int k = 0; k < C; k++) {
+					cin >> arr[i][j][k];
+					if (arr[i][j][k] =='S') {
+						startx = i;
+						starty = j;
+						startz = k;
+					}
+					else if (arr[i][j][k] == 'E') {
+						endx = i;
+						endy = j;
+						endz = k;
+					}
+					visited[i][j][k] = false;
+				}
+			}
+		}
+		bool possible = bfs(arr, visited, L, R, C);
+		if (possible) cout << "Escaped in " << minutes << " minute(s).\n";
+		else cout << "Trapped!\n";
+	}
+
+	return 0;
+}
