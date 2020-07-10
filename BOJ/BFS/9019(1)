@@ -1,0 +1,87 @@
+/*
+  9019-DSLR
+  시작 숫자로 부터 D, S, L, R연산을 하나씩 수행했을 때 나올 수 있는 수들을 BFS로 찾으면 이 문제를 해결할 수 있다.
+  그리고 원하는 숫자에 도달 했을 때, 사용된 연산을 출력해야하기 때문에
+  각 수마다 해당 수에 도달하기 위한 연산을 같이 저장한다.
+  이렇게 문제를 풀면 4~5초 정도의 시간이 걸린다.
+  따라서 9019(2)에서 더 시간을 단축시킬 수 있는 풀이를 작성하였다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+string bfs(vector<bool>& visited, int start, int end) {
+	visited[start] = true;
+	queue<pair<int, string>> q;
+	q.push({ start, "" });
+
+	string ret;
+	bool finish = false;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			int num = q.front().first;
+			string str = q.front().second;
+			q.pop();
+			if (num == end) {
+				ret = str;
+				finish = true;
+			}
+			//D
+			if (visited[(2 * num) % 10000] == false) {
+				visited[(2 * num) % 10000] = true;
+				q.push({ (2 * num) % 10000, str + "D" });
+			}
+			//S
+			if (visited[(num + 9999) % 10000] == false) {
+				visited[(num + 9999) % 10000] = true;
+				q.push({ (num + 9999) % 10000, str + "S" });
+			}
+			//L
+			int newnum = (num % 1000) * 10 + (num / 1000);
+			if (visited[newnum] == false) {
+				visited[newnum] = true;
+				q.push({ newnum, str + "L" });
+			}
+			//R
+			newnum = (num % 10) * 1000 + num / 10;
+			if (visited[newnum] == false) {
+				visited[newnum] = true;
+				q.push({ newnum, str + "R" });
+			}
+		}
+		if (finish) break;
+	}
+	return ret;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int start, end;
+		cin >> start >> end;
+		vector<bool> visited(10000);
+		for (int i = 0; i < 10000; i++) {
+			visited[i] = false;
+		}
+		cout << bfs(visited, start, end)<<"\n";
+	}
+	return 0;
+}
