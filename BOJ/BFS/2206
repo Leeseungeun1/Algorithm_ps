@@ -1,0 +1,80 @@
+/*
+  2206-벽 부수고 이동하기
+  좌표 내 BFS를 이용하면 문제를 해결할 수 있다.
+  하지만 여기서 벽을 한 개 부수고 이동할 수 있음을 고려해야한다.
+  따라서 queue에 벽을 부순 개수와 현재 좌표를 동시에 저장하여, 벽이 있는 곳에 추가적으로 진입할 수 있는지 여부를 확인한다.
+  또한, 벽을 부순 경우와 벽을 부수지 않은 경우에 같은 곳을 지날 수 있다.
+  때문에 visited를 벽을 부순 경우와 벽을 부수지 않은 경우를 구분하지 않으면, 둘 중 하나의 경우를 무시하게 된다.
+  따라서 visited 배열도 두 경우를 분리하여 해당 좌표 접근 여부를 확인해야 한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+bool visited[1001][1001][2];
+int bfs(vector<vector<char>>& arr, int row, int col) {
+	visited[0][0][0] = true;
+	queue < pair<int, pair<int, int>>> q;
+	q.push({ 0, {0,0} });
+
+	int cnt = 0;
+	bool finish = false;
+	while (!q.empty()) {
+		int size = q.size();
+		cnt++;
+		while (size--) {
+			int num = q.front().first;
+			int x = q.front().second.first;
+			int y = q.front().second.second;
+			q.pop();
+			if (x == row - 1 && y == col - 1) finish = true;
+			for (int i = 0; i < 4; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < row && 0 <= y + dy[i] && y + dy[i] < col) {
+					if (visited[x + dx[i]][y + dy[i]][num] == false && arr[x + dx[i]][y + dy[i]] == '0') {
+						visited[x + dx[i]][y + dy[i]][num] = true;
+						q.push({ num,{x + dx[i], y + dy[i]} });
+					}
+					if (visited[x + dx[i]][y + dy[i]][1] == false && num == 0 && arr[x + dx[i]][y + dy[i]] == '1') {
+						visited[x + dx[i]][y + dy[i]][1] = true;
+						q.push({ num + 1,{x + dx[i], y + dy[i]} });
+					}
+				}
+			}
+		}
+		if (finish) break;
+	}
+	if (finish) return cnt;
+	else return -1;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, m;
+	cin >> n >> m;
+	vector<vector<char>> arr(n, vector<char>(m));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	cout << bfs(arr, n, m);
+	return 0;
+}
