@@ -1,0 +1,82 @@
+/*
+  7576-토마토
+  이 문제는 익은 토마토가 하루단위로 어떤 안 익은 토마토에게 영향을 주는지 BFS를 진행하면 된다.
+  그리고 이 BFS의 종결조건은 더 이상 안 익은 토마토가 없거나, 익은 토마토가 영향을 줄 수 있는 토마토가 더 이상 없는 경우다.
+  따라서 BFS가 종결되었을 때, 안 익은 토마토의 개수를 기준으로 안익은 토마토의 개수가 0이면 토마토가 다 익는데 걸린 일수를,
+  안익은 토마토의 개수가 0이 아니면 -1을 출력하도록 한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+int startx, starty, endx, endy;
+int time = 0;
+
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+int bfs(vector<vector<int>>& arr, vector<vector<bool>>& visited, int row, int col) {
+	queue<pair<int, int>> q;
+	int zero = 0;
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < col; j++) {
+			if (arr[i][j] == 1) {
+				visited[i][j] = true;
+				q.push({ i,j });
+			}
+			else if (arr[i][j] == 0) zero++;
+		}
+	}
+
+	int cnt = 0;
+	while (!q.empty()) {
+		if (zero == 0) break;
+		int size = q.size();
+		while (size--) {
+			int x = q.front().first;
+			int y = q.front().second;
+			q.pop();
+			for (int i = 0; i < 4; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < row && 0 <= y + dy[i] && y + dy[i] < col) {
+					if (visited[x + dx[i]][y + dy[i]] == false && arr[x + dx[i]][y + dy[i]] == 0) {
+						zero--;
+						visited[x + dx[i]][y + dy[i]] = true;
+						q.push({ x + dx[i], y + dy[i] });
+					}
+				}
+			}
+		}
+		cnt++;
+	}
+	if (zero == 0) return cnt;
+	else return -1;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, m;
+	cin >> n >> m;
+	vector<vector<int>> arr(m, vector<int> (n));
+	vector<vector<bool>> visited(m, vector<bool>(n));
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> arr[i][j];
+			visited[i][j] = false;
+		}
+	}
+
+	cout<<bfs(arr, visited, m, n);
+	return 0;
+}
