@@ -1,0 +1,75 @@
+/*
+  2178-미로 탐색
+  이 문제는 BFS를 이용하여 해결할 수 있다.
+  우선 (1,1)인 지점을 시작으로 하여, 각 단계마다 어느 칸으로 이동할 수 있는지를 확인한다.
+  BFS를 이용하여 이동하는 칸을 파악하다가, 만약 (N,M)칸을 만나게 된다면, 해당 칸일 탐색하는 과정이 몇 단계인지를 파악하면 된다.
+  n번째 단계에서 탐색하는 칸들은 시작점으로부터 n개의 칸을 이동했을 때 도달할 수 있는 칸들이기 때문이다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+int bfs(vector<vector<int>>& arr, vector<vector<bool>>& visited, int x, int y, int n, int m) {
+	visited[x][y] = true;
+	queue<pair<int, int>> q;
+	q.push({ x,y });
+
+	int cnt = 0;
+	int ret = 0;
+	while (!q.empty()) {
+		int size = q.size();
+		cnt++;
+		while (size--) {
+			int a = q.front().first;
+			int b = q.front().second;
+			q.pop();
+			if (a == n - 1 && b == m - 1)ret = cnt;
+			for (int i = 0; i < 4; i++) {
+				if (0 <= a + dx[i] && a + dx[i] < n && 0 <= b + dy[i] && b + dy[i] < m) {
+					if (visited[a + dx[i]][b + dy[i]] == false && arr[a + dx[i]][b + dy[i]]==1) {
+						visited[a + dx[i]][b + dy[i]] = true;
+						q.push({ a + dx[i], b + dy[i] });
+					}
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, m;
+	cin >> n >> m;
+	vector<vector<int>> arr(n, vector<int>(m));
+	vector<vector<bool>> visited(n, vector<bool>(m));
+	for (int i = 0; i < n; i++) {
+		string str;
+		cin >> str;
+		for (int j = 0; j < str.size(); j++) {
+			visited[i][j] = false;
+			if (str[j] == '1') arr[i][j] = 1;
+			else arr[i][j] = 0;
+		}
+	}
+
+	cout << bfs(arr, visited, 0, 0, n, m);
+	return 0;
+}
