@@ -1,0 +1,71 @@
+/*
+  1697-숨바꼭질
+  수빈이가 이동할 수 있는 위치를 BFS로 파악하면 이 문제를 해결할 수 있다.
+  수빈이가 이동할 수 있는 경우는 세 가지 경우이므로, 각 경우에 대해서 수빈이가 어디로 이동하는지 확인한다.
+  그리고 수빈이가 이동한 곳이 동생이 있는 경우라면,
+  동생이 있는 곳 까지 수빈이가 이동해야하는 횟수를 수빈이가 있는 지역이 몇 단계에 탐색되는 곳인지 확인하므로써 알 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int bfs(vector<bool>& visited, int N, int K) {
+	visited[N] = true;
+	queue<int> q;
+	q.push(N);
+
+	int move[2] = { -1,1 };
+	int cnt = 0;
+	bool findflag = false;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			int cur = q.front();
+			if (cur == K) findflag = true;
+			q.pop();
+			for (int i = 0; i < 2; i++) {
+				if (0 <= cur + move[i] && cur + move[i] <= 100000) {
+					if (visited[cur + move[i]] == false) {
+						visited[cur + move[i]] = true;
+						q.push(cur + move[i]);
+					}
+				}
+			}
+			if (0 <= 2*cur && 2*cur <= 100000) {
+				if (visited[2*cur] == false) {
+					visited[2 * cur] = true;
+					q.push(2 * cur);
+				}
+			}
+		}
+		if (findflag) break;
+		cnt++;
+	}
+	return cnt;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int N, K;
+	cin >> N >> K;
+	vector<bool> visited(200000);
+	for (int i = 0; i < 200000; i++) visited[i] = false;
+
+	cout << bfs(visited, N, K) << "\n";
+	return 0;
+}
