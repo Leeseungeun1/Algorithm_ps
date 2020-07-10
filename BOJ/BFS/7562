@@ -1,0 +1,74 @@
+/*
+  7562-나이트의 이동
+  나이트가 이동할 수 있는 구간을 BFS를 이용하여 찾아나가는 방식으로 문제를 해결할 수 있다.
+  여기에서 k단계에서 살펴보는 node들은 시작점으로부터 k번 이동했을 때 도달하는 node들을 나타낸다.
+  나이트가 계속해서 움직이다가 가고자하는 목적지에 도달했다면, 해당 목적지를 몇 번째 단계에서 살펴보는지를 확인한다.
+  그리고 목적지를 살펴보는 단계가 시작점으로 부터 목적지까지 도달하는데 움직이는 횟수다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int dx[8] = { -2, -1, 1, 2, 2, 1, -1, -2 };
+int dy[8] = { 1, 2, 2, 1, -1, -2, -2, -1 };
+int startx, starty, endx, endy;
+
+int bfs(vector<vector<bool>>& visited, int l) {
+	visited[startx][starty] = true;
+	queue<pair<int, int>> q;
+	q.push({ startx, starty });
+	
+	int cnt = 0;
+	bool findflag = false;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			int x = q.front().first;
+			int y = q.front().second;
+			q.pop();
+			if (x == endx && y == endy) findflag = true;
+			for (int i = 0; i < 8; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < l && 0 <= y + dy[i] && y + dy[i] < l) {
+					if (visited[x + dx[i]][y + dy[i]] == false) {
+						visited[x + dx[i]][y + dy[i]] = true;
+						q.push({ x + dx[i], y + dy[i] });
+					}
+				}
+			}
+		}
+		if (findflag) break;
+		cnt++;
+	}
+	return cnt;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int l;
+		cin >> l;
+		vector<vector<bool>> visited(l, vector<bool>(l));
+		for (int i = 0; i < l; i++) {
+			for (int j = 0; j < l; j++) visited[i][j] = false;
+		}
+		cin >> startx >> starty >> endx >> endy;
+		cout<<bfs(visited, l)<<"\n";
+	}
+	return 0;
+}
