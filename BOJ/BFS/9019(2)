@@ -1,0 +1,106 @@
+/*
+  9019(2)-DSLR
+  이 문제의 시간을 더 단축시키기 위해서는 수에 도달하기 위한 연산을 저장하는 방법을 달리하면 된다.
+  연산 과정을 찾기 위해서 두 배열을 사용하는데,
+  numstore[i]는 i값이 되기 전의 값을 저장하고
+  charstore[i]는 i값이 되기 위해서 수행 된 연산을 저장한다.
+  예를 들어서 numstore[2341]=1234, charstore[2341]=L로 저장될 수 있는 것이다.
+  그러면 numstore[end]값부터 역추적하여 연산 과정을 구할 수 있고,
+  이렇게 문제를 해결하면 시간이 2초 까지 단축될 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+
+int numstore[10000];
+char charstore[10000];
+void bfs(vector<bool>& visited, int start, int end) {
+	visited[start] = true;
+	queue<int> q;
+	q.push(start);
+
+	bool finish = false;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			int num = q.front();
+			q.pop();
+			if (num == end) {
+				finish = true;
+			}
+			//D
+			if (visited[(2 * num) % 10000] == false) {
+				visited[(2 * num) % 10000] = true;
+				q.push((2 * num) % 10000);
+				numstore[(2 * num) % 10000] = num;
+				charstore[(2 * num) % 10000] = 'D';
+			}
+			//S
+			if (visited[(num + 9999) % 10000] == false) {
+				visited[(num + 9999) % 10000] = true;
+				q.push((num + 9999) % 10000);
+				numstore[(num + 9999) % 10000] = num;
+				charstore[(num + 9999) % 10000] = 'S';
+			}
+			//L
+			int newnum = (num % 1000) * 10 + (num / 1000);
+			if (visited[newnum] == false) {
+				visited[newnum] = true;
+				q.push(newnum);
+				numstore[newnum] = num;
+				charstore[newnum] = 'L';
+			}
+			//R
+			newnum = (num % 10) * 1000 + num / 10;
+			if (visited[newnum] == false) {
+				visited[newnum] = true;
+				q.push(newnum);
+				numstore[newnum] = num;
+				charstore[newnum] = 'R';
+			}
+		}
+		if (finish) break;
+	}
+}
+
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int start, end;
+		cin >> start >> end;
+		vector<bool> visited(10000);
+		for (int i = 0; i < 10000; i++) {
+			visited[i] = false;
+		}
+		bfs(visited, start, end);
+		stack<char> ans;
+		while (end != start) {
+			ans.push(charstore[end]);
+			end = numstore[end];
+		}
+		while (!ans.empty()) {
+			cout << ans.top();
+			ans.pop();
+		}
+		cout << "\n";
+	}
+	return 0;
+}
