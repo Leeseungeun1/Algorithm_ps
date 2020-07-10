@@ -1,0 +1,114 @@
+/*
+  3055-탈출
+  이 문제는 5427문제와 유사한 문제다.
+  이 문제에서 고슴도치 역시 물이 이동할 지역으로는 이동할 수 없기 때문에, BFS를 진행할 때 물이 확장될 지역을 먼저 파악한 뒤 고슴도치를 움직이는 방식으로 진행한다.
+  물 역시 한 번 물이 들어간 지역은 계속 물이 존재하는 것이므로, 해당 지역으로 여러 번 물이 확장 될 필요가 없다.
+  따라서 물에 대한 visit 배열도 사용한다.
+  이렇게 물과 고슴도치의 이동을 BFS로 진행하면서 고슴도치의 탈출 여부를 살펴보면 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+
+using namespace std;
+typedef long long ll;
+int startx, starty, endx, endy;
+int time = 0;
+
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+bool bfs(vector<vector<char>>& arr, int row, int col) {
+	queue<pair<int, int>> water;
+	queue<pair<int, int>> pet;
+	vector<vector<bool>> visited(row, vector<bool>(col));
+	vector<vector<bool>> wvisited(row, vector<bool>(col));
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < col; j++) {
+			visited[i][j] = false;
+			if (arr[i][j] == '*') {
+				water.push({ i,j });
+				wvisited[i][j] = true;
+			}
+			else wvisited[i][j] = false;
+		}
+	}
+	visited[startx][starty] = false;
+	pet.push({ startx, starty });
+
+	bool ret = false;
+	int cnt = 0;
+	while (!pet.empty()) {
+		int size = water.size();
+		while (size--) {
+			int x = water.front().first;
+			int y = water.front().second;
+			water.pop();
+			for (int i = 0; i < 4; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < row && 0 <= y + dy[i] && y + dy[i] < col && arr[x+dx[i]][y+dy[i]]!='X'&& arr[x + dx[i]][y + dy[i]] != 'D') {
+					if (wvisited[x + dx[i]][y + dy[i]] == false) {
+						water.push({ x + dx[i], y + dy[i] });
+						arr[x + dx[i]][y + dy[i]] = '*';
+						wvisited[x + dx[i]][y + dy[i]] = true;
+					}
+				}
+			}
+		}
+		size = pet.size();
+		while (size--) {
+			int x = pet.front().first;
+			int y = pet.front().second;
+			if (x == endx && y == endy) {
+				ret = true;
+				time = cnt;
+			}
+			pet.pop();
+			for (int i = 0; i < 4; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < row && 0 <= y + dy[i] && y + dy[i] < col) {
+					if ((arr[x + dx[i]][y + dy[i]] == '.'|| arr[x + dx[i]][y + dy[i]] == 'D') && visited[x + dx[i]][y + dy[i]] == false) {
+						visited[x + dx[i]][y + dy[i]] = true;
+						pet.push({ x + dx[i], y + dy[i] });
+					}
+				}
+			}
+		}
+		cnt++;
+		if (ret) break;
+	}
+	return ret;
+}
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int m, n;
+	cin >> m >> n;
+	vector<vector<char>> arr(m, vector<char>(n));
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> arr[i][j];
+			if (arr[i][j] == 'S') {
+				startx = i;
+				starty = j;
+			}
+			if (arr[i][j] == 'D') {
+				endx = i;
+				endy = j;
+			}
+		}
+	}
+	bool possible = bfs(arr, m, n);
+	if (possible) cout << time << "\n";
+	else cout << "KAKTUS\n";
+
+	return 0;
+}
