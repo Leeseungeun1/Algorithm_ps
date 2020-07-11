@@ -1,0 +1,59 @@
+/*
+  11049-행렬 곱셈 순서
+  행렬의 곱셈 연산의 값을 구하기 위해서는 주어진 행렬 곱셈을 부분 행렬 곱셈으로 나누어 해결할 수 있다.
+  예를 들어서 ABCD의 곱셈 연산의 값을 구하기 위해서는
+  A(BCD), (AB)(CD), (ABC)D의 세 가지 경우를 모두 고려해야 한다.
+  그러면 다시 BCD, AB, CD, ABC의 곱셈 연산의 최솟값을 구하는 문제로 변형된다.
+  따라서 이를 DP를 이용하여 해결할 수 있다.
+  그리고 정보를 저장하는 배열을 2차원으로 선언하고 다음과 같은 점화식을 세웠다.
+  arr[i][j].first:= i번째 행렬부터 j번째 행렬까지 계산 결과 중 가장 횟수가 작은 값
+  arr[i][j].first=min(i<=k<j) {arr[i][k].first+arr[k+1][j].first+두 연산 결과의 곱셈 횟수}
+  그리고 arr[i][j].second에는 해당 행렬의 (행, 렬)의 값을 저장하여, 두 연산의 결과의 곱셈 횟수를 계산할 수 있도록 설정했다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n;
+	cin >> n;
+	vector <vector<piii>> arr(n, vector<piii>(n));
+	for (int i = 0; i < n; i++) {
+		cin >> arr[i][i].second.first >> arr[i][i].second.second;
+		arr[i][i].first = 0;
+	}
+	for (int term = 1; term < n; term++) {
+		for (int i = 0; i < n; i++) {
+			int minimum = 987654321;
+			for (int j = i; j < i + term && i + term < n; j++) {
+				int cal = arr[i][j].first + arr[j + 1][i + term].first + arr[i][j].second.first * arr[i][j].second.second * arr[j + 1][i + term].second.second;
+				if (cal < minimum) {
+					minimum = cal;
+					arr[i][i + term].first = minimum;
+					arr[i][i + term].second.first = arr[i][j].second.first;
+					arr[i][i + term].second.second = arr[j + 1][i + term].second.second;
+				}
+			}
+		}
+	}
+	cout << arr[0][n - 1].first;
+	return 0;
+}
