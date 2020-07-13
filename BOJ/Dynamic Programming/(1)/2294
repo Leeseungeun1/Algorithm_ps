@@ -1,0 +1,63 @@
+/*
+  2294-동전2
+  k원을 만들기 위한 동전의 개수를 알기 위해서는 k-i (0<i<k-1)원을 만들기 위한 동전의 개수를 이용하면 된다.
+  우선 주어진 동전 i원이 있다면, k-i원을 만들기 위한 동전의 개수+1이 k원을 만들기 위한 동전의 개수 중 '후보'가 됨을 알 수 있다.
+  따라서 각 동전마다 k-i원을 만들기 위한 동전의 개수+1의 값을 구한 뒤, 그 값들 중 최솟값을 구하면 된다.
+  이 때, 한번 탐색 한 금액은 다시 탐색하지 않도록
+  금액 배열의 값이 -1이 아닌경우, 바로 해당 배열의 값을 반환하도록 한다. 
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+int find_res(int k, vector<int>& money, vector<int>& total) {
+	if (total[k] > -1) return total[k];
+
+	int size = money.size();
+	int res = 987654321;
+	for (int i = 0; i < size; i++) {
+		if (money[i] > k) break;
+		if (k == money[i]) {
+			res = 1;
+			break;
+		}
+		int ret = find_res(k - money[i], money, total);
+		if (ret != 0) res = min(res, ret + 1);
+	}
+	if(res!=987654321) return total[k] = res;
+	else return total[k] = 0;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n, k;
+	cin >> n >> k;
+	vector<int> money(n);
+	vector<int> total(k + 1);
+	for (int i = 0; i < n; i++) cin >> money[i];
+	for (int i = 0; i < k + 1; i++) total[i] = -1;
+	total[0] = 0;
+
+	sort(money.begin(), money.end());
+	int res = find_res(k, money, total);
+	if (res > 0) cout << total[k];
+	else cout << "-1\n";
+	return 0;
+}
