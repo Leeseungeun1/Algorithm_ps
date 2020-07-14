@@ -1,0 +1,73 @@
+/*
+  1987-알파벳
+  이 문제를 해결하기 위해서 DFS를 사용하였다.
+  우선 시작점으로 부터 움직일 수 있는 곳으로 이동을 한다. 그리고 이동한 곳에서 다시 움직일 수 있는곳을 파악하면서 최대로 움직일 수 있는 칸 수를 확인한다.
+  visited 배열은 경로를 찾을 때, 해당 경로에서 한 번 방문한 node를 다시 방문하는 일을 막기 위해서 사용된다.
+  다른 경로를 찾게 된다면 방문한 node의 정보가 달라지므로, 탐색하는 경로의 탐색이 끝나면 다시 visited 값을 초기화 해 준다.
+  그리고 alpha 배열은 해당 경로에서 주어진 알파벳이 등장 했는지 여부를 확인하는 배열이다.
+  이 역시 다른 경로를 찾게 된다면 찾은 알파벳의 정보가 달라지므로, 탐색하는 경로의 탐색이 끝나면 다시 alphabet 값을 초기화 해 준다.
+  그리고 node를 방문할 때마다 node의 개수를 이용하여 최댓값을 갱신 해 준다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+int maximum = 0;
+
+int dx[4] = { -1, 0, 1, 0 };
+int dy[4] = { 0, -1, 0, 1 };
+void DFS(vector<vector<char>>& arr, vector<vector<bool>>& visited, vector<bool>& alpha, int x, int y, int row, int col, int sum) {
+	visited[x][y] = true;
+	alpha[arr[x][y]-'A'] = true;
+	sum++;
+	maximum = max(maximum, sum);
+
+	for (int i = 0; i < 4; i++) {
+		if (0 <= x + dx[i] && x + dx[i] < row && 0 <= y + dy[i] && y + dy[i] < col) {
+			if (visited[x + dx[i]][y + dy[i]] == false && alpha[arr[x + dx[i]][y + dy[i]]-'A'] == false) {
+				DFS(arr, visited, alpha, x + dx[i], y + dy[i], row, col, sum);
+			}
+		}
+	}
+
+	visited[x][y] = false;
+	alpha[arr[x][y] - 'A'] = false;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int R, S;
+	cin >> R >> S;
+
+	vector<bool> alpha(26);
+	vector<vector<char>> arr(R, vector<char>(S));
+	vector<vector<bool>> visited(R, vector<bool>(S));
+	for (int i = 0; i < 26; i++) alpha[i] = false;
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < S; j++) {
+			cin >> arr[i][j];
+			visited[i][j] = false;
+		}
+	}
+
+	DFS(arr, visited, alpha, 0, 0, R, S, 0);
+	cout << maximum;
+	return 0;
+}
