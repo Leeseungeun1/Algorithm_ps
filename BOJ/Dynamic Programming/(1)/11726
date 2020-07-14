@@ -1,0 +1,51 @@
+/*
+  11726-2*n 타일링
+  우선 2*1 타일에 블럭을 배치하는 방법은 | 으로 한 가지이고,
+  2*2 타일에 블럭을 배치하는 방법은 =모양과 ||모양으로 두 가지다.
+  n이 3이상일 때의 타일링을 생각해보면,
+    1. 2*(n-1)타일링 방법에 |를 추가하기
+    2. 2*(n-2)타일링 방법에 =를 추가하기
+  가 된다.
+  2번의 방법에서 2*(n-2)타일링 방법에 ||를 추가하는 경우는 2*(n-1)타일링 방법에 |를 추가하는 것과 중복이 되므로 따로 카운팅 하지 않아도 된다.
+  따라서 이 규칙을 이용하여 점화식을 세우면 다음과 같다.
+    a_n: 2*n 타일링 방법의 수
+    a_n=a_n-1+a_n-2(n>=3),
+    a_1=1, a_2=2
+  이 점화식을 이용하면 문제를 해결할 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int div = 10007;
+	int n;
+	cin >> n;
+	vector<int> arr(n + 5);
+	arr[1] = 1;
+	arr[2] = 2;
+
+	for (int i = 3; i <= n; i++) {
+		arr[i] = (arr[i - 1] % div + arr[i - 2] % div)%div;
+	}
+	cout << arr[n];
+	return 0;
+}
