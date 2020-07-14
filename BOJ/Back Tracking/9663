@@ -1,0 +1,60 @@
+/*
+  9663 - N-queen
+  각 행에 퀸을 놓는 위치를 파악해가면서 문제를 해결했다.
+  각 행에서 퀸을 놓는 열을 따로 col vector에 저장한다.
+  그리고 그 다음 행에서는 지금까지 배치된 queen을 살펴보면서 같은 열이거나, 대각선상에 위치하지 않도록 queen을 배치한다.
+  만약 queen을 N개 모두 배치했다면, 경우의 수를 카운팅 해 주면서 queen의 배치 방법의 경우의 수를 찾는다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+vector<int> col;
+int cnt = 0;
+
+void DFS(int put, int N) {
+	if (put == N) {
+		cnt++;
+		return;
+	}
+	for (int i = 0; i < N; i++) {
+		bool possible = true;
+		for (int k = 0; k < put; k++) {
+			if (i == col[k] || abs(col[k] - i) == abs(k - put)) {
+				possible = false;
+				break;
+			}
+		}
+		if (possible) {
+			col.push_back(i);
+			DFS(put + 1, N);
+			col.erase(col.end() - 1);
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int N;
+	cin >> N;
+	
+	DFS(0, N);
+	cout << cnt;
+	return 0;
+}
