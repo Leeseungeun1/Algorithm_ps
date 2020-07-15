@@ -1,0 +1,64 @@
+/*
+  2098-외판원 순회
+  우선 이 문제의 첫 접근은 back-tracking을 이용하여 최단 경로를 찾는 방법이었다.
+  하지만 이렇게 했을때, O(N!)이라는 시간복잡도가 나오게되어, DP를 이용하여 시간을 단축하게 되었다.
+  DP를 설계할 때, 2차원 배열로 이 문제를 해결하기 위해서 비트 마스킹을 이용하였다.
+  DP[node][visited]에서 visited는 지금까지 방문한 node들을 나타낸다.
+  따라서 현재 visited가 나타내는 node들을 방문하고 현재 node에 있을 때, node에서 다시 시작점까지 가는 거리의 최솟값을 dp[node][visited]에 저장했다.
+  이렇게 dp배열을 이용하여 중복되는 순회를 제거하였다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+ll dp[16][1 << 16];
+
+ll DFS(vector<vector<ll>>& arr, int visited, int node, int n) {
+	visited = visited | (1 << node);
+	if (dp[node][visited] != -1) return dp[node][visited];
+	if (visited == (1 << n) - 1) {
+		if (arr[node][0] != 0) return arr[node][0];
+		else return 10000000000;
+	}
+
+	ll minimum = 10000000000;
+	for (int i = 0; i < n; i++) {
+		if (arr[node][i] != 0 && (visited & 1 << i) != 1 << i) {
+			minimum=min(minimum, DFS(arr, visited, i, n)+ arr[node][i]);
+		}
+	}
+	return dp[node][visited] = minimum;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	for (int i = 0; i < 16; i++) {
+		for (int j = 0; j < (1 << 16); j++) dp[i][j] = -1;
+	}
+	int visited = 0;
+	int n;
+	cin >> n;
+	vector<vector<ll>> arr(n, vector<ll>(n));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) cin >> arr[i][j];
+	}
+
+	cout << DFS(arr, visited, 0, n);
+	return 0;
+}
