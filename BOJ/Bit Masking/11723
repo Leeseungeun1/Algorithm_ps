@@ -1,0 +1,64 @@
+/*
+  11723-집합
+  제한된 메모리가 4MB였기 때문에, 이 문제를 해결하기 위해서 비트 마스킹 스킬을 이용하였다.
+  n번째 자리의 수를 확인하기 위해서 1<<n과 값&1<<n을 비교했고,
+  n번째 bit를 set하기 위해서 값=값|1<<n을 이용하였다.
+  그리고 n번째 bit를 clear하기 위해서 값=값&~1<<n을 이용하였다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int num = 0;
+	int M, n;
+	cin >> M;
+	for (int i = 0; i < M; i++) {
+		string str;
+		cin >> str;
+		if (str == "add") {
+			cin >> n;
+			if ((num & 1 << n) == 1 << n) continue;
+			num = num | (1 << n);
+		}
+		else if (str == "remove") {
+			cin >> n;
+			if ((num & 1 << n) != 1 << n) continue;
+			num = num & ~(1 << n);
+		}
+		else if (str == "check") {
+			cin >> n;
+			if ((num & 1 << n) == 1 << n) cout << "1\n";
+			else cout << "0\n";
+		}
+		else if (str == "toggle") {
+			cin >> n;
+			if ((num & 1 << n) == 1 << n) num = num & ~(1 << n);
+			else num = num | (1 << n);
+		}
+		else if (str == "all") {
+			num = ~(1 << 21);
+		}
+		else if (str == "empty") {
+			num = 0;
+		}
+	}
+	return 0;
+}
