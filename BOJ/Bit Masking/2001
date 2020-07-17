@@ -1,0 +1,117 @@
+/*
+  2001-보석 줍기
+  BFS를 이용하여 한 섬에서 다른 섬으로 가는 경우를 살펴보았다.
+  queue에 <남은 보석 상태, <현재 섬 번호, 현재 가지고 있는 보석의 무게>>를 저장하고, queue의 요소를 하나하나 살펴보면서 다음과 같은 과정을 거친다.
+    1. 현재 가지고 있는 보석으로 다음 섬으로 이동할 수 있는가?
+    2-1. 1번을 충족하고 다음 섬에 보석이 있다면 보석을 줍는 경우를 생각한다.
+    2-2. 1번을 충족하고 다음 섬에서 보석을 줍지 않는 경우를 생각한다.
+  그리고 visited배열을 구현하였다.
+  visited 배열을 단순한 BFS를 구현할 때 사용하는 것 처럼 구현한다면, 해당 섬을 여러번 방문하는 경우를 간과하게 된다.
+  따라서 현재 가지고 있는 보석의 상태를 기준으로 해당 섬을 방문했는지 여부를 확인하는 경우를 거친다.
+  이 때, 현재 가지고 있는 보석을 비트마스킹을 이용하여 표현한다.
+  그리고 중복되는 순환을 반복하기 위해서 dp를 이용한다.
+  dp[n][jewel]은 n번째 섬에 jewel 보석을 들고 이동했을 때, 이후에 주울 수 있는 보석의 최대 수를 의미한다.
+  이 과정을 통해서 문제를 해결하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<int, pair<int, int>> piii;
+
+int n, m, k;
+int visited[105][1 << 15];
+int dp[105][1 << 15];
+
+void BFS(vector<vector<pii>> adj, vector<int> jewelnum, int jewel, int start) {
+	ll num = 1 << 15;
+	for (int i = 0; i < 105; i++) {
+		for (int j = 0; j < num; j++) visited[i][j] = 0;
+	}
+
+	queue<piii> q;
+	int number = jewelnum[start];
+	q.push({ jewel, {start, 0} });
+	visited[start][jewel] = 1;
+	if ((jewel & (1 << number)) != 0) {
+		q.push({ jewel & ~(1 << number), {start, 1} });
+		visited[start][jewel & ~(1 << number)] = 1;
+	}
+
+	while (!q.empty()) {
+		int jew = q.front().first;
+		int island = q.front().second.first;
+		int kilo = q.front().second.second;
+		q.pop();
+
+		for (auto p : adj[island]) {
+			int next = p.first;
+			int limit = p.second;
+			number = jewelnum[next];
+			if (kilo > limit) continue;
+			if (number != -1 && (jew & (1 << number)) != 0) {
+				if (visited[next][jew & ~(1 << number)] == 0 && dp[next][jew & ~(1 << number)] == -1) {
+					q.push({ jew & ~(1 << number), {next, kilo + 1} });
+					visited[next][jew & ~(1 << number)] = 1;
+					dp[next][jew & ~(1 << number)] = kilo + 1;
+				}
+			}
+			if (visited[next][jew] == 0 && dp[next][jew] == -1) {
+				q.push({ jew, {next, kilo} });
+				visited[next][jew] = 1;
+				dp[next][jew] = kilo;
+			}
+		}
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll num = 1 << 15;
+	for (int i = 0; i < 105; i++) {
+		for (int j = 0; j < num; j++) dp[i][j] = -1;
+	}
+
+	int island;
+	cin >> n >> m >> k;
+	int jewel = 0;
+	vector<vector<pii>> adj(n + 1);
+	vector<int> jewelnum(n + 1);
+	for (int i = 0; i < n + 1; i++) jewelnum[i] = -1;
+	for (int i = 0; i < k; i++) {
+		cin >> island;
+		jewelnum[island] = i;
+		jewel = jewel | (1 << i);
+	}
+
+	for (int i = 0; i < m; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+		adj[a].push_back({ b,c });
+		adj[b].push_back({ a,c });
+	}
+
+	BFS(adj, jewelnum, jewel, 1);
+	int maximum = 0;
+	for (int i = 0; i < num; i++) {
+		maximum = max(maximum, dp[1][i]);
+	}
+	cout << maximum;
+	return 0;
+}
