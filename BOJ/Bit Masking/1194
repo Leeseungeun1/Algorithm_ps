@@ -1,0 +1,92 @@
+/*
+  1194-달이 차오른다, 가자.
+  이 문제는 주어진 시작점에서 도착점까지 몇 번만의 이동으로 도달할 수 있는지 알아보는 문제로 BFS로 접근을 했다.
+  그런데 같은 지역을 반복해서 지나갈 수 있기 때문에 visited를 단순하게 구현하면, 반복해서 지나가는 경우를 놓치게 된다.
+  따라서 어떤 지역 어떤 key를 갖고 지나치는지를 기준으로 visited배열을 작성하였다.
+  즉, visited[x][y][key]=1이라는 것은 key를 갖고 (x,y)를 지나쳤는지 여부를 저장 해 놓은 것이다.
+  그리고 현재 가지고 있는 key의 정보는 bit masking을 이용하여 구현했다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, pair<int, int>> piii;
+
+int dx[4] = { -1, 0, 1, 0 };
+int dy[4] = { 0, 1, 0, -1 };
+int visited[55][55][1 << 10];
+
+int BFS(vector<vector<char>>& arr, int n, int m, int x, int y) {
+	queue<pair<ll, pair<int, int>>> q;
+	q.push({ 0, {x, y} });
+	visited[x][y][0] = 1;
+
+	bool success = false;
+	int cnt = 0;
+	while (!q.empty()) {
+		int size = q.size();
+		while (size--) {
+			ll key = q.front().first;
+			int x = q.front().second.first;
+			int y = q.front().second.second;
+			q.pop();
+			if (arr[x][y] == '1') success = true;
+			for (int i = 0; i < 4; i++) {
+				if (0 <= x + dx[i] && x + dx[i] < n && 0 <= y + dy[i] && y + dy[i] < m) {
+					if (visited[x + dx[i]][y + dy[i]][key] == 1) continue;
+					if (arr[x + dx[i]][y + dy[i]] == '#') continue;
+					if ('A' <= arr[x + dx[i]][y + dy[i]] && arr[x + dx[i]][y + dy[i]] <= 'F') {
+						int num = arr[x + dx[i]][y + dy[i]] - 'A';
+						if ((key & (1 << num)) == 0) continue;
+					}
+					visited[x + dx[i]][y + dy[i]][key] = 1;
+					if ('a' <= arr[x + dx[i]][y + dy[i]] && arr[x + dx[i]][y + dy[i]] <= 'f') {
+						int num = arr[x + dx[i]][y + dy[i]] - 'a';
+						q.push({ key | (1 << num), {x + dx[i], y + dy[i]} });
+					}
+					else {
+						q.push({ key, {x + dx[i], y + dy[i]} });
+					}
+				}
+			}
+		}
+		if (success) break;
+		cnt++;
+	}
+	if (success) return cnt;
+	else return -1;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m, x, y;
+	cin >> n >> m;
+	vector<vector<char>> arr(n, vector<char>(m));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> arr[i][j];
+			if (arr[i][j] == '0') {
+				x = i;
+				y = j;
+			}
+		}
+	}
+
+	cout << BFS(arr, n, m, x, y);
+	return 0;
+}
