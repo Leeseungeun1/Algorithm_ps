@@ -1,0 +1,49 @@
+/*
+  11659-구간 합 배열 구하기 4
+  구간 합 배열을 구하기 위해서 처음부터 n개의 배열의 원소의 합을 더한 값을 저장한 pSum이라는 배열을 사용했다.
+  만약 2 4이라는 input이 들어온다면, 두 번째 부터 네 번째까지 원소의 합을 더하란 뜻이다.
+  이 값구하기 위해서 pSum[4]-pSum[1]연산을 해준다면, 처음부터 4번째 원소까지의 합 - 처음부터 1번째 원소 까지의 합 연산이 진행되면서
+  두번째, 세번째, 네번째 원소의 값만 추출 해 낼 수 있다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m;
+	cin >> n >> m;
+	vector<int> arr(n);
+	vector<int> pSum(n + 1);
+
+	pSum[0] = 0;
+	for (int i = 0; i < n; i++)cin >> arr[i];
+	for (int i = 1; i <= n; i++) {
+		pSum[i] = pSum[i - 1] + arr[i - 1];
+	}
+
+	for (int i = 0; i < m; i++) {
+		int a, b;
+		cin >> a >> b;
+		cout << pSum[b] - pSum[a - 1] << "\n";
+	}
+	return 0;
+}
