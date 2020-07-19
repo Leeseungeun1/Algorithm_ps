@@ -1,0 +1,89 @@
+/*
+  11997-Load Balancing (Silver)
+  좌표의 최댓값은 1,000,000이나, 좌표가 최대 1000개가 나오므로 이 문제를 좌표 압축하여 풀 수 있다.
+  우선 제시 된 x좌표와 y좌표에 차례대로 0,1,2,...의 index를 붙여준다.
+  그리고 해당 좌표를 이용하여 소가 있는 곳을 표시하고,
+  2차원 배열의 pSum[i][j]를 (0,0)부터 (i,j)까지의 존재하는 소의 수로 정의한다.
+  그리고 pSum을 이용하여 네 개의 구역을 나누면서 나올 수 있는 최소 M의 값을 구하면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<int, pair<int, int>> piii;
+
+int xindex[1000001], yindex[1000001];
+int x, y;
+int press[1001][1001];
+int pSum[1001][1001];
+
+int cal(int x1, int y1, int x2, int y2) {
+	return pSum[x2][y2] - pSum[x2][y1 - 1] - pSum[x1 - 1][y2] + pSum[x1 - 1][y1 - 1];
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+	set<int> row;
+	set<int> col;
+	vector<pii> arr;
+	for (int i = 0; i < n; i++) {
+		int a, b;
+		cin >> a >> b;
+		arr.push_back({ a,b });
+		row.insert(a);
+		col.insert(b);
+	}
+	/*좌표 압축*/
+	for (auto r : row) {
+		xindex[r] = x++;
+	}
+	for (auto c : col) {
+		yindex[c] = y++;
+	}
+
+	/*압축 된 좌표 이용*/
+	for (int i = 0; i < n; i++) {
+		int a = arr[i].first;
+		int b = arr[i].second;
+		press[xindex[a]][yindex[b]] = 1;
+	}
+	
+	for (int i = 1; i <= x; i++) {
+		for (int j = 1; j <= y; j++) {
+			pSum[i][j] = pSum[i - 1][j] + pSum[i][j - 1] - pSum[i - 1][j - 1] + press[i - 1][j - 1];
+		}
+	}
+
+	int ans = 987654321;
+
+	for (int i = 1; i <= x; i++) {
+		for (int j = 1; j <= y; j++) {
+			int maximum = 0;
+			maximum = max(maximum, cal(1, 1, i, j));
+			maximum = max(maximum, cal(1, j+1, i, y));
+			maximum = max(maximum, cal(i+1, 1, x, j));
+			maximum = max(maximum, cal(i+1, j+1, x, y));
+			ans = min(maximum, ans);
+		}
+	}
+	cout << ans;
+	return 0;
+}
