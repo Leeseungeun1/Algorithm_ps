@@ -1,0 +1,68 @@
+/*
+  16437-양 구출 작전
+  이 문제는 트리를 DFS로 탐색하면서 각 node에서 올 수 있는 양이 최대 몇 마리인지 파악하면 되는 문제다.
+  어떤 특정 node의 경우 해당 node의 자식 node를 DFS로 탐색한다.
+  그리고 자식 node에서 구출 될 수 있는 양의 수를 계산한다.
+  이 때, 만약 어떤 node에 늑대가 있다면, 자식 node에서 올라오는 양의 수와 현재 node의 늑대의 수를 계산한다.
+  만약 양의 수가 늑대의 수보다 적게 된다면, 양이 0마리가 다른 섬으로 이동할 것이고,
+  그렇지 않다면 늑대에게 잡아먹히고 남은 양의 수가 다른 섬으로 이동하게 된다.
+  (그리고 이 경우, 늑대가 최대 한 마리의 양을 먹을 수 있기 때문에 이미 한 마리를 잡아먹은 늑대는 더 양을 잡아먹을 수 없다.)
+  이 과정을 재귀적으로 반복하면서 root node에는 몇 마리의 양이 올 수 있는지 확인한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+ll DFS(vector<vector<ll>>& adj, vector<pci>& info, vector<bool>& visited, ll node) {
+	visited[node] = true;
+	ll value = info[node].second;
+	if (info[node].first == 'W') value = -value;
+	
+	ll res;
+	for (auto n : adj[node]) {
+		if (visited[n]) continue;
+		res = DFS(adj, info, visited, n);
+		if (value + res > value) value = value + res;
+	}
+
+	if (value < 0) return 0;
+	else return value;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll n;
+	cin >> n;
+	vector<vector<ll>> adj(n + 1);
+	vector<pci> info(n + 1);
+	vector<bool> visited(n + 1, false);
+	for (int i = 2; i <= n; i++) {
+		char c; ll w, num;
+		cin >> c >> w >> num;
+		adj[i].push_back(num);
+		adj[num].push_back(i);
+		info[i] = { c,w };
+	}
+
+	cout << DFS(adj, info, visited, 1);
+	return 0;
+}
