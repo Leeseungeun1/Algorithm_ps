@@ -1,0 +1,68 @@
+/*
+  1068-트리
+  트리에서 제거하는 node를 root로 하는 subtree는 현재 tree와 더 이상 연결되어있지 않다.
+  그러므로 현재 tree의 leaf node의 수를 셀 때, 제거하는 node를 root로 하는 subtree이후 부분은 보지 않아도 된다.
+  따라서 root부터 자식 node를 살펴보면서 다음에 나오는 node가 제거하고자 하는 node이거나, 현재 보고있는 node가 제거하고자 하는 node인 경우에는 더 탐색하지 않는다.
+  트리를 root부터 탐색하면서 어떤 node에서 더 탐색할 자식 node가 없는 경우, 해당 node는 leaf node가 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, p, root, del;
+	cin >> n;
+	vector<vector<int>> adj(n + 1);
+	vector<bool> visited(n + 1, false);
+	for (int i = 0; i < n; i++) {
+		cin >> p;
+		if (p == -1) {
+			root = i;
+			continue;
+		}
+		adj[p].push_back(i);
+		adj[i].push_back(p);
+	}
+	cin >> del;
+
+	queue<int> q;
+	q.push(root);
+	visited[root] = true;
+
+	int ans = 0;
+	while (!q.empty()) {
+		bool leaf = true;
+		int node = q.front();
+		q.pop();
+		if (node == del) continue;
+		for (auto next : adj[node]) {
+			if (visited[next] || next == del) continue;
+			leaf = false;
+			visited[next] = true;
+			q.push(next);
+		}
+		if (leaf) ans++;
+	}
+
+	cout << ans;
+	return 0;
+}
