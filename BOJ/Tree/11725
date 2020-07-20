@@ -1,0 +1,64 @@
+/*
+  11725-트리의 부모 찾기
+  이 문제를 해결하기 위해서는 각 tree를 순회하면서 부모를 확인할 수 있어야 한다.
+  그렇기 때문에 level order순회가 필요했고, BFS를 이용하여 구현하였다.
+  각 정점에 대한 인접 list를 생성하고 각 node에 대해서 인접 list를 살펴보면서 모든 자식의 부모를 확인한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+	vector<int> parent(n + 1, -1);
+	vector<vector<int>> adj(n + 1);
+	vector<bool> visited(n + 1, false);
+
+	for (int i = 0; i < n - 1; i++) {
+		int a, b;
+		cin >> a >> b;
+		adj[a].push_back(b);
+		adj[b].push_back(a);
+	}
+
+	queue<int> q;
+	q.push(1);
+	visited[1] = true;
+
+	while (!q.empty()) {
+		int n = q.front();
+		q.pop();
+		for (auto next : adj[n]) {
+			if (visited[next]) continue;
+			visited[next] = true;
+			parent[next] = n;
+			q.push(next);
+		}
+	}
+
+	for (int i = 2; i <= n; i++) {
+		cout << parent[i] << "\n";
+	}
+
+	return 0;
+}
