@@ -1,0 +1,91 @@
+/*
+  1991-트리 순회
+  우선 트리를 구성하기 위해서 tree class를 선언했다.
+  이 class는 각 node에 대한 자식 node의 정보를 저장하고 있는 class다.
+  그리고 입력으로 들어오는 부모와 자식 정보를 children 배열에 저장한다.
+  이렇게 부모와 자식간의 정보를 저장했다면, 각 순회방법에 맞게
+  자식이 존재하면 해당 자식의 자식을 탐색하는 방법으로 순회를 진행한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<int, pair<int, int>> piii;
+
+class Tree {
+public:
+	int n;	//정점의 개수
+	vector<vector<int>> children;
+
+	Tree(int N) {
+		n = N;
+		children.resize(n, vector<int>(2, -1));
+	}
+
+	void makeTree(int par, int left, int right) {
+		children[par][0] = left;
+		children[par][1] = right;
+	}
+
+	void preOrder(int root) {
+		char c = root + 'A';
+		cout << c;
+		if (children[root][0] != -1) preOrder(children[root][0]);
+		if (children[root][1] != -1) preOrder(children[root][1]);
+	}
+
+	void inOrder(int root) {
+		char c = root + 'A';
+		if (children[root][0] != -1) inOrder(children[root][0]);
+		cout << c;
+		if (children[root][1] != -1) inOrder(children[root][1]);
+	}
+
+	void postOrder(int root) {
+		char c = root + 'A';
+		if (children[root][0] != -1) postOrder(children[root][0]);
+		if (children[root][1] != -1) postOrder(children[root][1]);
+		cout << c;
+	}
+};
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+	Tree tree = Tree(n);
+
+	char a, b, c;
+	int par, left, right;
+	for (int i = 0; i < n; i++) {
+		cin >> a >> b >> c;
+		par = a - 'A'; left = b - 'A'; right = c - 'A';
+		if (b == '.') left = -1;
+		if (c == '.') right = -1;
+		tree.makeTree(par, left, right);
+	}
+
+	tree.preOrder(0);
+	cout << "\n";
+	tree.inOrder(0);
+	cout << "\n";
+	tree.postOrder(0);
+	cout << "\n";
+	return 0;
+}
