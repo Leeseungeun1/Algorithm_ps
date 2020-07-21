@@ -1,0 +1,90 @@
+/*
+  2250-트리의 높이와 너비
+  우선 입력되는 부모와 자식 정보를 이용하여 tree를 구성한다.
+  그리고 중위탐색을 하면서 각 node가 배치 될 번호를 붙여주면 격자 모양에 조건에 맞게 트리를 그릴 수 있게 된다.
+  각 level에서 가장 왼쪽에 있는 node의 번호를 알았다면, 이후에 나오는 동일한 level의 node에서는 거리를 계산한다.
+  그리고 만약 그 거리가 최댓값보다 길다면 최댓값과 level을 갱신하고, 최댓값과 같다면 level을 비교하여 필요하다면 갱신한다.
+  만약에 skewed tree가 주어지는 경우 root node가 답이 되므로 해당 경우에는 따로 핸들링을 해 준다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int row = 1;
+int parentnode[100000];
+int leftarr[100000];
+int maximum = -1;
+int maximumlevel = -1;
+
+class Tree {
+public:
+	int n;
+	vector<vector<int>> children;
+	Tree(int N) {
+		n = N;
+		children.resize(n + 1, vector<int>(2, -1));
+	}
+
+	void makeTree(int parent, int left, int right) {
+		children[parent][0] = left;
+		children[parent][1] = right;
+		parentnode[left] = parentnode[right] = parent;
+	}
+
+	void inorder(int node, int level) {
+		if (children[node][0] != -1) inorder(children[node][0], level + 1);
+		if (leftarr[level] == 0) leftarr[level] = row;
+		else {
+			int diff = row - leftarr[level] + 1;
+			if (diff == maximum && level < maximumlevel) maximumlevel = level;
+			else if (diff > maximum) {
+				maximum = diff;
+				maximumlevel = level;
+			}
+		}
+		row++;
+		if (children[node][1] != -1) inorder(children[node][1], level + 1);
+	}
+};
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	ll n;
+	cin >> n;
+
+	Tree tree = Tree(n);
+	int left, right, parent;
+	for (int i = 1; i <= n; i++) {
+		cin >> parent >> left >> right;
+		tree.makeTree(parent, left, right);
+	}
+
+	int root = 0;
+	for (int i = 1; i <= n; i++) {
+		if (parentnode[i] == 0) root = i;  //find root node
+	}
+	tree.inorder(root, 1);
+
+	if (maximumlevel == -1) cout << "1 1";
+	else cout << maximumlevel << " " << maximum;
+	return 0;
+}
