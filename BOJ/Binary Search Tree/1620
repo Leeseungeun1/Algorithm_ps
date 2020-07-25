@@ -1,0 +1,56 @@
+/*
+  1620-나는야 포켓몬 마스터 이다솜
+  이 문제는 몬스터의 번호와 이름을 같이 저장하기 위해서 BST로 구현 된 map을 이용하여 해결할 수 있다.
+  key의 값은 유일하고, key에 대응되는 value의 값이 존재하기 때문에
+  포켓몬 이름을 key로 하고 번호를 value로 하는 map과 번호를 key로 하고 이름을 value로 하는 map을 생성하여
+  각각 맞는 상황에 적절한 map을 이용하여 포켓몬을 찾으면 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m;
+	cin >> n >> m;
+	string s;
+	map<string, int> ms;
+	map<int, string> mi;
+	for (int i = 1; i <= n; i++) {
+		cin >> s;
+		ms.insert({ s, i });
+		mi.insert({ i, s });
+	}
+
+	while (m--) {
+		cin >> s;
+		if ('0' <= s[0] && s[0] <= '9') {
+			int num = atoi(s.c_str());
+			cout << mi.find(num)->second << "\n";
+		}
+		else {
+			cout << ms.find(s)->second << "\n";
+		}
+	}
+	return 0;
+}
