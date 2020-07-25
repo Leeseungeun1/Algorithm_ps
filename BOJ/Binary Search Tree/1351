@@ -1,0 +1,50 @@
+/*
+  1351-무한 수열
+  수열에서 N이 최대 10^12이기 떄문에, 10^12의 integer배열을 생성할 수 없다.
+  그렇기 때문에 index와 해당 index에 대응하는 값을 key-value로 저장하는 map을 사용하여 문제를 해결했다.
+  그리고 주어진 시간 내에 문제를 해결하기 위해서 dynamic programming기법을 이용했다.
+  map을 매번 확인하면서 map에 index에 해당하는 값이 주어져있는지 살펴본 뒤, 주어져 있지 않다면 점화식을 계산하는 방향으로 문제를 해결했다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+ll seq(ll n, ll p, ll q, map<ll, ll>& m) {
+	if (n == 0) return 1;
+	if (m.find(n) != m.end()) return m.find(n)->second;
+	
+	ll first = seq(n / p, p, q, m);
+	ll second = seq(n / q, p, q, m);
+	m.insert({ n, first + second });
+	return first + second;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll n, p, q;
+	cin >> n >> p >> q;
+	map<ll, ll> m;
+	
+	cout << seq(n, p, q, m);
+	return 0;
+}
