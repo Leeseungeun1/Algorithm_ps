@@ -1,0 +1,49 @@
+/*
+  11279-최대힙
+  이 문제는 최대 힙을 이용하여 push와 pop연산을 수행하는 문제다.
+  최대 힙을 사용하기 위해서 C++의 STL 라이브러리에서 제공되는 priority queue를 이용했다.
+  그래서 0이 입력되는 경우에는 priority queue의 top을 출력하고 pop연산을 진행하였다.
+  그리고 그 외의 양의 정수가 입력되는 경우에는 push연산을 진행하였다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	priority_queue<int> pq;
+	int n, num;
+	cin >> n;
+	while (n--) {
+		cin >> num;
+		if (num == 0) {
+			if (pq.empty()) cout << "0\n";
+			else {
+				cout << pq.top()<<"\n";
+				pq.pop();
+			}
+		}
+		else pq.push(num);
+	}
+	return 0;
+}
