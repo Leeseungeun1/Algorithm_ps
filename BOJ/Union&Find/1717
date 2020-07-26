@@ -1,0 +1,71 @@
+/*
+  1717-집합의 표현
+  0이 들어올 때는 union연산을, 1이 들어올 때는 find연산을 하면 된다.
+  아래서 구현한 코드는 붕괴 알고리즘으로
+  a root가 b root에 합쳐지고, a를 root로 하는 정점에 대해서 find연산이 다시 진행된다면 해당정점의 root는 b로 변경이 된다.
+  그리고 root에는 해당 root에 속해있는 정점의 수를 저장 해 놓아서 union을 할 때 조금 더 시간을 단축할 수 있도록 구현했다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int find(int n, vector<int>& parent) {
+	if (parent[n] < 0) return n;
+	parent[n] = find(parent[n], parent);
+	return parent[n];
+}
+
+void merge(int a, int b, vector<int>& parent) {
+	int reta = find(a, parent);
+	int retb = find(b, parent);
+	if (reta == retb) return;
+	if (parent[reta] < parent[retb]) {
+		parent[reta] += parent[retb];
+		parent[retb] = reta;
+	}
+	else {
+		parent[retb] += parent[reta];
+		parent[reta] = retb;
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m;
+	cin >> n >> m;
+	vector<int> parent(n + 1, -1);
+	int num, a, b;
+	while (m--) {
+		cin >> num >> a >> b;
+		if (num == 1) {
+			a = find(a, parent);
+			b = find(b, parent);
+			if (a == b) cout << "YES\n";
+			else cout << "NO\n";
+		}
+		else {
+			merge(a, b, parent);
+		}
+	}
+	return 0;
+}
