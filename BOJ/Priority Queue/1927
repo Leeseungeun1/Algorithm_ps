@@ -1,0 +1,49 @@
+/*
+  1927-최소 힙
+  STL 라이브러리에서 제공되는 priority queue는 default로 최대 힙으로 구현이 되어 있다.
+  따라서 최대 힙에서 최소 힙을 구현하기 위해서 입력되는 값에 -를 곱해주었다.
+  그러면 자동적으로 최솟값으로 들어오는 값이 가장 top에 위치하게 되기 때문에 해당 priority queue는 최소 힙이 된다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	priority_queue<int> pq;
+	int n, num;
+	cin >> n;
+	while (n--) {
+		cin >> num;
+		num = -num;
+		if (num == 0) {
+			if (pq.empty()) cout << "0\n";
+			else {
+				cout << -pq.top()<<"\n";
+				pq.pop();
+			}
+		}
+		else pq.push(num);
+	}
+	return 0;
+}
