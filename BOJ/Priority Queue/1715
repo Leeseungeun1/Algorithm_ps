@@ -1,0 +1,55 @@
+/*
+  1715-카드 정렬하기
+  이 문제에서 예시로 준 10 20 40에 대해서 생각해보면, 카드를 합치는 최소한의 방법은 (10+20)+(30+40)이라는 것을 알 수 있다.
+  또 다르게 카드를 합치는 방법에는 (10+40)+(50+20)이 있다.
+  두 경우를 비교해보면, 두 경우 모두 10+20+40 연산이 들어가고 30을 추가로 더하는지 50을 추가로 더하는지에만 차이가 있다는 것을 알 수 있다.
+  이 결과를 통해서 최소값을 내기 위해서는 가장 카드의 수가 적은 두 카드를 먼저 더해야 한다는 것을 알 수 있다.
+  따라서 최소 priority queue를 구현하여 최소 두 카드 묶음을 더해가는 과정을 반복하면 된다.
+  이 때 두 카드 묶음을 하나로 합쳤다면, 합친 카드 묶음을 다른 카드묶음과도 합칠 수 있도록 다시 priority queue에 추가해야한다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	priority_queue<ll> pq;
+	ll n, num;
+	cin >> n;
+
+	while (n--) {
+		cin >> num;
+		pq.push(-num);
+	}
+	ll ans = 0;
+	while (pq.size() != 1) {
+		ll first = pq.top();
+		pq.pop();
+		ll second = pq.top();
+		pq.pop();
+		pq.push(first + second);
+		ans += first + second;
+	}
+	cout << -ans;
+	return 0;
+}
