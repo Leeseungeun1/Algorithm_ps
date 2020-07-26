@@ -1,0 +1,65 @@
+/*
+  2696-중앙값 구하기
+  중앙값을 구하기 위해서는 수가 수가 입력될 때 마다 수열을 정렬 해 줘야한다.
+  그래서 정렬을 하면서 수를 삽입하기 위해서 priority queue를 이용했다.
+  최소힙 priority queue를 이용하여 매번 수가 들어올 때마다 정렬 된 상태로 만든 뒤,
+  중앙값을 구하기 위해서 index/2만큼의 수를 pop시켰다.
+  그리고 top을 출력하여 중앙값을 출력한 뒤, pop시킨 값을 다시 push하여 수열을 원래 상태로 만들어 주었다.
+  그리고 출력한 수가 10개가 될때마다 new line을 출력하는 조건문을 추가 해 주었다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int t, n, num, mid;
+	cin >> t;
+	while (t--) {
+		priority_queue<int> pq;
+		queue<int> temp;
+		cin >> n;
+		cout << (n + 1) / 2 << "\n";
+		int cnt = 0;
+		for (int i = 1; i <= n; i++) {
+			cin >> num;
+			pq.push(-num);
+			if (i % 2) {
+				mid = i / 2;
+				while (mid--) {
+					temp.push(pq.top());
+					pq.pop();
+				}
+				cout << -pq.top() << " ";
+				cnt++;
+				if (cnt % 10 == 0) cout << "\n";
+				while (!temp.empty()) {
+					pq.push(temp.front());
+					temp.pop();
+				}
+			}
+		}
+		cout << "\n";
+	}
+	return 0;
+}
