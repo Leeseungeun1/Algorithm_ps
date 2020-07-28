@@ -1,0 +1,76 @@
+/*
+  11085-군사 이동
+  너비가 제일 넓은 도로가 먼저 사용되어야 하므로 우선 길의 너비가 내림차 순이 되도록 정렬한다.
+  그리고 너비가 넓은 것 부터 차례대로 union을 하면서 백준월드의 수도와 큐브월드의 수도가 하나의 집합으로 합쳐지는 경우를 본다.
+  그러면 그 때 이용한 길이 모든 길 중 제일 적게 사람을 수용할 수 있는 길이가 되는 것 이다.
+*/
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int find(int a, vector<int>& parent) {
+	if (parent[a] < 0) return a;
+	parent[a] = find(parent[a], parent);
+	return parent[a];
+}
+void merge(int a, int b, vector<int>& parent) {
+	int reta = find(a, parent);
+	int retb = find(b, parent);
+	if (reta == retb) return;
+	if (parent[reta] < parent[retb]) {
+		parent[reta] += parent[retb];
+		parent[retb] = reta;
+	}
+	else {
+		parent[retb] += parent[reta];
+		parent[reta] = retb;
+	}
+}
+
+bool cmp(piii a, piii b) {
+	return a.first > b.first;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int p, w, c, v;
+	cin >> p >> w >> c >> v;
+	vector<piii> arr(w);
+	vector<int> parent(p, -1);
+	for (int i = 0; i < w; i++) {
+		cin >> arr[i].second.first >> arr[i].second.second >> arr[i].first;
+	}
+	sort(arr.begin(), arr.end(), cmp);
+	int ans = 0;
+	for (int i = 0; i < w; i++) {
+		merge(arr[i].second.first, arr[i].second.second, parent);
+		int first = find(c, parent);
+		int second = find(v, parent);
+		if ((first < 0 && second == c) || (second < 0 && first == v) || (first == second)) {
+			ans = arr[i].first;
+			break;
+		}
+	}
+
+	cout << ans;
+	return 0;
+}
