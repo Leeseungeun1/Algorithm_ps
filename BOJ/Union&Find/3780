@@ -1,0 +1,73 @@
+/*
+  3780-네트워크 연결
+  네트워크를 연결하기 위해서 우선 각 기업끼리 연결을 해 준다.(merge 함수)
+  그리고 기업으로부터 센터까지의 거리를 찾는 과정에서을 find함수로 구현 해 주었다.
+  이 때, 거리를 찾는 과정은 거리를 구하고자 하는 기업과 직접 연결된 기업이 센터까지의 거리가 얼마인지를 확인하고,
+  해당 거리에 기업과 연결된 기업의 거리를 더해주면서 구할 수 잇다.
+  이 때, parent정보를 갱신하기 전에 직접 연결 된 기업의 정보를 별도로 저장 해 둔다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+ll find(ll a, vector<ll>& parent, vector<ll>& distance) {
+	if (parent[a] < 0) return a;
+	ll beforepar = parent[a];
+	parent[a] = find(parent[a], parent, distance);
+	distance[a] += distance[beforepar];
+	return parent[a];
+}
+
+void merge(ll a, ll b, vector<ll>& parent, vector<ll>& distance) {
+	parent[a] = b;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int n;
+		cin >> n;
+		vector<ll> parent(n + 1, -1);
+		vector<ll> distance(n + 1, 0);
+		char c;
+		ll a, b;
+		while (1) {
+			cin >> c;
+			if (c == 'O') break;
+			if (c == 'I') {
+				cin >> a >> b;
+				distance[a] = abs(a - b) % 1000;
+				merge(a, b, parent, distance);
+			}
+			if (c == 'E') {
+				cin >> a;
+				find(a, parent, distance);
+				cout << distance[a]<<"\n";
+			}
+		}
+	}
+	return 0;
+}
