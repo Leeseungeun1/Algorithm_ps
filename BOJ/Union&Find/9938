@@ -1,0 +1,75 @@
+/*
+  9938-방청소
+  하나의 그룹은 술이 옮겨질 수 있는 서랍의 그룹을 나타낸다.
+  그렇게 술이 서로 이동할 수 있는 그룹을 union을 한 뒤, 해당 그룹에 현재 있는 술의 개수를 저장한다.
+  그리고 새로운 술이 들어왔을 때, 해당 술이 들어갈 그룹에 현재 있는 술의 개수가 서랍의 수보다 많다면,
+  들어오는 술을 마셔야한다.
+  그렇지 않은 경우에는 다른 술들을 이동하여 술을 보관할 수 있게 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int find(int a, vector<int>& parent) {
+	if (parent[a] < 0) return a;
+	parent[a] = find(parent[a], parent);
+	return parent[a];
+}
+
+void merge(int a, int b, vector<int>& parent, vector<int>& accumulate) {
+	int reta = find(a, parent);
+	int retb = find(b, parent);
+	if (reta == retb) return;
+	if (parent[reta] < parent[retb]) {
+		parent[reta] += parent[retb];
+		parent[retb] = reta;
+		accumulate[reta] += accumulate[retb];
+		accumulate[retb] = 0;
+	}
+	else {
+		parent[retb] += parent[reta];
+		parent[reta] = retb;
+		accumulate[retb] += accumulate[reta];
+		accumulate[reta] = 0;
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m, a, b;
+	cin >> n >> m;
+	vector<int> parent(m + 1, -1);
+	vector<int> accumulate(m + 1, 0);
+	while (n--) {
+		cin >> a >> b;
+		merge(a, b, parent, accumulate);
+		int p = find(a, parent);
+		if (accumulate[p] + 1 > abs(parent[p])) cout << "SMECE\n";
+		else {
+			accumulate[p]++;
+			cout << "LADICA\n";
+		}
+	}
+	return 0;
+}
