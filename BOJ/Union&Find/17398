@@ -1,0 +1,89 @@
+/*
+  17398-통신망 분할
+  이 문제를 해결하기 위해서 역으로 접근하였다.
+  제외하지 않는 연결만 이용하여 우선 union을 적용한다.
+  그리고 제일 마지막에 제거하는 연결부터 차례대로 union을 진행한다.
+  union을 진행하기 전에 제거하는 연결의 두 정점의 parent를 찾는다.
+  만약 두 parent가 같다면, 해당 연결을 제거해도 연결망이 분리되지 않는다는 소리다.
+  그렇지 않다면 각 연결망의 정점 개수를 곱한다.
+  그리고 union을 진행하여 다음 제거 연결에 대해서도 동일한 과정을 반복한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+ll find(ll a, vector<ll>& parent) {
+	if (parent[a] < 0) return a;
+	parent[a] = find(parent[a], parent);
+	return parent[a];
+}
+void merge(ll a, ll b, vector<ll>& parent) {
+	ll reta = find(a, parent);
+	ll retb = find(b, parent);
+	if (reta == retb) return;
+	if (parent[reta] < parent[retb]) {
+		parent[reta] += parent[retb];
+		parent[retb] = reta;
+	}
+	else {
+		parent[retb] += parent[reta];
+		parent[reta] = retb;
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll n, m, q;
+	cin >> n >> m >> q;
+	vector<pii> arr(m + 1);
+	stack<ll> s;
+	vector<ll> parent(n + 1, -1);
+	vector<bool> visited(m + 1, true);
+
+	for (ll i = 1; i <= m; i++) {
+		cin >> arr[i].first >> arr[i].second;
+	}
+	ll a;
+	while (q--) {
+		cin >> a;
+		visited[a] = false;
+		s.push(a);
+	}
+	for (ll i = 1; i <= m; i++) {
+		if (visited[i]) merge(arr[i].first, arr[i].second, parent);
+	}
+
+	ll sum = 0;
+	while (!s.empty()) {
+		a = s.top();
+		s.pop();
+		ll firstpar = find(arr[a].first, parent);
+		ll secondpar = find(arr[a].second, parent);
+		if (firstpar != secondpar) sum += parent[firstpar] * parent[secondpar];
+		merge(arr[a].first, arr[a].second, parent);
+	}
+	cout << sum;
+
+	return 0;
+}
