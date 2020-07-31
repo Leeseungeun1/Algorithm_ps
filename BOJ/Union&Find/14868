@@ -1,0 +1,118 @@
+/*
+  14868-문명
+  이 문제는 BFS와 union & find를 이용하여 해결할 수 있는 문제다.
+  우선 BFS를 이용하여 현재 문명이 어디로 퍼져나갈 수 있는지 확인한다.
+  그리고 각 퍼져나가는 지역마다, 해당 지역의 인접한 부분에 맞닿아 있는 문명이 있는지 여부를 확인한다.
+  그리고 맞닿아 있다면 해당 문명을 하나로 union한다.
+  union할 때 두개의 다른 문명이 결합되어있음을 파악하는 것은
+  다른 하나의 지역도 특정 문명이 있었으며, union으로 인해 그 지역의 parent값이 양수로 바뀌었는지를 확인하면 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int n, m;
+int dx[4] = { 0,-1,0,1 };
+int dy[4] = { 1,0,-1,0 };
+bool start[5000000];
+
+int find(int a, vector<int>& parent) {
+	if (parent[a] < 0) return a;
+	parent[a] = find(parent[a], parent);
+	return parent[a];
+}
+
+void merge(int a, int b, vector<int>& parent) {
+	int reta = find(a, parent);
+	int retb = find(b, parent);
+	if (reta == retb) return;
+	if (start[reta]) {
+		parent[reta] += parent[retb];
+		parent[retb] = reta;
+		if (start[retb] && parent[retb] > 0) m--;
+	}
+	else {
+		parent[retb] += parent[reta];
+		parent[reta] = retb;
+		if (start[reta] && parent[reta] > 0) m--;
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> n >> m;
+	vector<int> parent((n + 1) * (n + 1), -1);
+	vector<vector<bool>> visited(n + 1, vector<bool>(n + 1,false));
+	int a, b;
+	queue<pii> q;
+
+	int t = m;
+	for (int i = 0; i < t; i++) {
+		cin >> a >> b;
+		q.push({ a,b });
+		start[a * n + b] = true;
+		visited[a][b] = true;
+		for (int j = 0; j < 4; j++) {
+			if (1 <= a + dx[j] && a + dx[j] <= n && 1 <= b + dy[j] && b + dy[j] <= n) {
+				int num1 = a * n + b;
+				int num2 = (a + dx[j]) * n + (b + dy[j]);
+				if (visited[a + dx[j]][b + dy[j]]) merge(num1, num2, parent);
+			}
+		}
+	}
+
+	int cnt = 0;
+	while (!q.empty()) {
+		int size = q.size();
+		if (m==1) break;
+		cnt++;
+		while (size--) {
+			a = q.front().first;
+			b = q.front().second;
+			q.pop();
+			for (int i = 0; i < 4; i++) {
+				if (1 <= a + dx[i] && a + dx[i] <= n && 1 <= b + dy[i] && b + dy[i] <= n) {
+					int num1 = a * n + b;
+					int num2 = (a + dx[i]) * n + (b + dy[i]);
+					merge(num1, num2, parent);
+
+					if (visited[a + dx[i]][b + dy[i]]) continue;
+					for (int j = 0; j < 4; j++) {
+						int x = (a + dx[i]);
+						int y = (b + dy[i]);
+						if (1 <= x + dx[j] && x + dx[j] <= n && 1 <= y + dy[j] && y + dy[j] <= n) {
+							int num1 = x * n + y;
+							int num2 = (x + dx[j]) * n + (y + dy[j]);
+							if (visited[x + dx[j]][y + dy[j]]) merge(num1, num2, parent);
+						}
+					}
+					q.push({ a + dx[i], b + dy[i] });
+					visited[a + dx[i]][b + dy[i]] = true;
+				}
+			}
+		}
+	}
+	cout << cnt;
+	return 0;
+}
