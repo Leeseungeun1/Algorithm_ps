@@ -1,0 +1,90 @@
+/*
+  14427-수열과 커리15
+  이 문제를 주어진 시간 안에 해결하기 위해서 segment tree를 이용하여 문제를 해결한다.
+  우선 init함수를 통해 segment tree에 각 구간에 해당하는 minimum 값과, 해당 minimum값을 가지는 index를 표시 해 준다.
+  이 때 leaf node이외의 node에서는 같은 minimum이더라도 index가 더 작은 값을 저장한다.
+  그리고 update함수를 이용하여 특정 leaf node의 값을 바꿔주고 동일한 과정을 반복한다.
+  그러면 tree의 root node에 전 구간의 minimum 값에 대한 정보를 저장하고 있을 것 이기 때문에 해당 node를 이용하여 답을 출력하면 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+pii* tree;
+vector<int> arr;
+
+int init(int index, int start, int end) {
+	if (start == end) {
+		tree[index].first = start;
+		tree[index].second = arr[start];
+	}
+	else {
+		int mid = (start + end) / 2;
+		tree[index].second = min(init(2 * index, start, mid), init(2 * index + 1, mid + 1, end));
+		if (tree[2 * index].second <= tree[2 * index + 1].second) tree[index].first = tree[2 * index].first;
+		else tree[index].first = tree[2 * index + 1].first;
+	}
+	return tree[index].second;
+}
+
+void update(int index, int start, int end, int idx, int v) {
+	if (start == end) {
+		tree[index].second = v;
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (idx <= mid) update(2*index, start, mid, idx, v);
+		else update(2*index+1, mid + 1, end, idx, v);
+		tree[index].second = min(tree[2 * index].second, tree[2 * index + 1].second);
+		if (tree[2 * index].second <= tree[2 * index + 1].second) tree[index].first = tree[2 * index].first;
+		else tree[index].first = tree[2 * index + 1].first;
+	}
+}
+
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+	arr.resize(n + 1);
+	int h = ceil(log2(n));
+	tree = new pii[1 << (h + 1)];
+
+	for (int i = 1; i <= n; i++) cin >> arr[i];
+	init(1, 1, n);
+	
+	int m, a, i, v;
+	cin >> m;
+	while (m--) {
+		cin >> a;
+		if (a == 1) {
+			cin >> i >> v;
+			update(1, 1, n, i, v);
+		}
+		else if (a == 2) {
+			cout << tree[1].first << "\n";
+		}
+	}
+	return 0;
+}
