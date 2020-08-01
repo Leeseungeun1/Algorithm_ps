@@ -1,0 +1,89 @@
+/*
+  2042-구간 합 구하기
+  segment tree를 구간의 원소의 합을 저장하는 segment tree로 정의한다.
+  그리고 init함수와 update함수를 구현한다.
+  그리고 특정 구간의 합을 구하는 함수를 구현한다.
+  : 특정 구간에 해당하는 index 범위의 정보를 저장하는 segment tree의 구간을 찾아가면서, segment tree에 저장된 값들을 합하는 과정을 재귀적으로 반복한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+ll* tree;
+vector<ll> arr;
+
+ll init(ll index, ll start, ll end) {
+	if (start == end) {
+		tree[index] = arr[start];
+	}
+	else {
+		ll mid = (start + end) / 2;
+		tree[index] = init(2 * index, start, mid) + init(2 * index + 1, mid + 1, end);
+	}
+	return tree[index];
+}
+
+void update(ll index, ll start, ll end, ll idx, ll x) {
+	if (start == end) {
+		tree[index] = x;
+	}
+	else {
+		ll mid = (start + end) / 2;
+		if (idx <= mid) update(2 * index, start, mid, idx, x);
+		else update(2 * index + 1, mid + 1, end, idx, x);
+		tree[index] = tree[2 * index] + tree[2 * index + 1];
+	}
+}
+
+ll find_sum(ll index, ll start, ll end, ll left, ll right) {
+	if (end < left || right < start) return 0;
+	if (left <= start && end <= right) return tree[index];
+	ll mid = (start + end) / 2;
+	return find_sum(2 * index, start, mid, left, right) + find_sum(2 * index + 1, mid + 1, end, left, right);
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll n, m, k;
+	cin >> n >> m >> k;
+	arr.resize(n + 1);
+
+	ll h = ceil(log2(n));
+	tree = new ll[(ll)1 << (h + 1)];
+	
+	for (int i = 1; i <= n; i++) cin >> arr[i];
+
+	init(1, 1, n);
+	ll a, b, c;
+	for (int i = 0; i < m + k; i++) {
+		cin >> a >> b >> c;
+		if (a == 1) {
+			update(1, 1, n, b, c);
+		}
+		else {
+			cout << find_sum(1, 1, n, b, c) << "\n";
+		}
+	}
+	return 0;
+}
