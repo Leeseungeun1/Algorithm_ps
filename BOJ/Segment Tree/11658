@@ -1,0 +1,142 @@
+/*
+  11658-구간 합 구하기3
+  이 문제는 2차원 segment tree를 이용하여 해결이 가능 한 문제다.
+  2차원 segment tree는 다음과 같이 구성을 한다.
+    1. tree[a][b]에서 a에 해당하는 부분은 모든 a구간에 해당하는 모든 열의 합니다.
+    2. tree[a][b]에서 b에 해당하는 부분은 a구간에 해당하는 열 중, b 구간에 해당하는 모든 행의 합이다.
+  예를 들어서
+     1  2  3  4
+     5  6  7  8
+     9 10 11 12
+    13 14 15 16
+  배열이 주어진 경우, tree[2~3구간][1]은 (2+6+10+14)+(3+7+11+15)에 해당하는 값이고,
+  tree[2~3구간][3~4구간]은 (10+14)+(11+15)에 해당하는 값이 된다.
+  따라서 init이나 update를 하는 경우에 우선 열에 해당하는 구간을 이용하여 재귀적으로 tree를 탐색한다.
+  그리고 각 열에 해당하는 구간을 탐색 했다면, 행에 해당하는 구간을 다시 재귀적으로 탐색하면서 정보를 갱신하면 된다.
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+vector<vector<ll>> tree;
+vector<vector<ll>> arr;
+int n, m;
+
+ll init_y(int index, int start, int end, int treeindex, int xstart, int xend) {
+	if (start == end) {
+		ll sum = 0;
+		for (int i = xstart; i <= xend; i++) {
+			sum += arr[start][i];
+		}
+		tree[treeindex][index] = sum;
+	}
+	else {
+		int mid = (start + end) / 2;
+		tree[treeindex][index] = init_y(2 * index, start, mid, treeindex, xstart, xend)
+			+ init_y(2 * index + 1, mid + 1, end, treeindex, xstart, xend);
+	}
+	return tree[treeindex][index];
+}
+
+void init_x(int index, int start, int end) {
+	if (start == end) {
+		tree[index][1] = init_y(1, 1, n, index, start, end);
+	}
+	else {
+		int mid = (start + end) / 2;
+		init_x(2 * index, start, mid);
+		init_x(2 * index + 1, mid + 1, end);
+		init_y(1, 1, n, index, start, end);
+		tree[index][1] = tree[2 * index][1] + tree[2 * index + 1][1];
+	}
+}
+
+ll y_update(int index, int start, int end, int treeindex, int y, int value) {
+	if (start == end) {
+		tree[treeindex][index] += value;
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (y <= mid) y_update(2 * index, start, mid, treeindex, y, value);
+		else y_update(2 * index + 1, mid + 1, end, treeindex, y, value);
+		tree[treeindex][index] = tree[treeindex][2 * index] + tree[treeindex][2 * index + 1];
+	}
+	return tree[treeindex][index];
+}
+
+void x_update(int index, int start, int end, int x, int y, int value) {
+	if (start == end) {
+		tree[index][1] = y_update(1, 1, n, index, y, value);
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (x <= mid) x_update(2 * index, start, mid, x, y, value);
+		else x_update(2 * index + 1, mid + 1, end, x, y, value);
+		y_update(1, 1, n, index, y, value);
+		tree[index][1] = tree[2 * index][1] + tree[2 * index + 1][1];
+	}
+}
+
+ll find_sum_y(int index, int start, int end, int treeindex, int y1, int y2) {
+	if (y2 < start || end < y1) return 0;
+	if (y1 <= start && end <= y2) return tree[treeindex][index];
+	int mid = (start + end) / 2;
+	return find_sum_y(2 * index, start, mid, treeindex, y1, y2) + find_sum_y(2 * index + 1, mid + 1, end, treeindex, y1, y2);
+}
+
+ll find_sum_x(int index, int start, int end, int x1, int y1, int x2, int y2) {
+	if (x2 < start || end < x1) return 0;
+	if (x1 <= start && end <= x2) return find_sum_y(1,1,n, index, y1, y2);
+	int mid = (start + end) / 2;
+	return find_sum_x(2 * index, start, mid, x1, y1, x2, y2) + find_sum_x(2 * index + 1, mid + 1, end, x1, y1, x2, y2);
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> n >> m;
+	arr.resize(n + 1, vector<ll>(n + 1));
+	int h = ceil(log2(n));
+	tree.resize(1 << (h + 1), vector<ll>(1 << (h + 1)));
+	
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) cin >> arr[i][j];
+	}
+	
+	init_x(1, 1, n);
+
+	int a, b, c, d, e;
+	while (m--) {
+		cin >> a >> b >> c >> d;
+		if (a == 0) {
+			x_update(1, 1, n, c, b, d - arr[b][c]);
+			arr[b][c] = d;
+		}
+		else {
+			cin >> e;
+			cout << find_sum_x(1, 1, n, c, b, e, d) << "\n";
+		}
+	}
+	return 0;
+}
