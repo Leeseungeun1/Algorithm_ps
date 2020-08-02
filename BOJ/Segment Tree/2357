@@ -1,0 +1,75 @@
+/*
+  2357-최솟값과 최댓값
+  이 문제를 해결하기 위해서 segment tree를 해당 구간의 최솟값과 최댓값의 pair를 저장하는 것으로 정의한다.
+  그리고 각 구간에 해당하는 segment tree를 살펴보면서 최솟값과 최댓값을 return 받아 출력하면 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+pair<ll,ll>* tree;
+vector<ll> arr;
+
+pair<ll, ll> init(int index, int start, int end) {
+	if (start == end) {
+		tree[index].first = arr[start];
+		tree[index].second = arr[start];
+	}
+	else {
+		int mid = (start + end) / 2;
+		pair<ll, ll> ret1 = init(2 * index, start, mid);
+		pair<ll, ll> ret2 = init(2 * index + 1, mid + 1, end);
+		tree[index].first = min(ret1.first, ret2.first);
+		tree[index].second = max(ret1.second, ret2.second);
+	}
+	return tree[index];
+}
+
+pair<ll, ll> find_minmax(int index, int start, int end, int left, int right) {
+	if (end < left || right < start) return { LLONG_MAX, LLONG_MIN };
+	if (left <= start && end <= right) return tree[index];
+	int mid = (start + end) / 2;
+	pair<ll, ll> ret1 = find_minmax(2 * index, start, mid, left, right);
+	pair<ll, ll> ret2 = find_minmax(2 * index + 1, mid + 1, end, left, right);
+	return { min(ret1.first,ret2.first), max(ret1.second,ret2.second) };
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll n, m;
+	cin >> n >> m;
+	arr.resize(n + 1);
+	for (int i = 1; i <= n; i++) cin >> arr[i];
+
+	ll h = ceil(log2(n));
+	tree = new pair<ll, ll>[1 << (h + 1)];
+	init(1, 1, n);
+
+	int a, b;
+	while (m--) {
+		cin >> a >> b;
+		pair<ll, ll> ret = find_minmax(1, 1, n, a, b);
+		cout << ret.first << " " << ret.second << "\n";
+	}
+	return 0;
+}
