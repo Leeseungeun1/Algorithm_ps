@@ -1,0 +1,102 @@
+/*
+  3653-영화 수집
+  segment tree를 현재 위치에 영화가 있는 여부를 표시하는 것으로 정의하여 문제를 해결할 수 있다.
+  최대 영화가 100,000들어올 수 있고, 영화를 100,000번 뽑을 수 있으므로 영화는 -100,000~100,000사이의 값에 위치하게 된다.
+  하지만 인덱싱을 위해서 전체 영화가 위치할 수 있는 지점을 0~300,000으로 잡고, 영화가 처음 있는 자리를 책의번호+150,000으로 잡는다.
+  그리고 각 영화마다 현재 있는 위치의 값을 표시 해 둔다.
+  영화를 뽑을 때마다 현재 책이 있는 자리 이전까지 있는 영화의 수를 출력한다.
+  그리고 현재 영화가 있는자리의 값을 0으로 바꾸어주고 영화가 새롭게 있게되는 자리(책 더미의 맨 윗 부분)의 값을 1로 바꾸어 준다.
+  이 과정을 반복하면서 영화의 위치를 바꿔 문제를 해결할 수 있다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+vector<int> tree;
+vector<int> arr;
+int minimum;
+
+int init(int index, int start, int end) {
+	if (start == end) {
+		tree[index] = arr[start];
+	}
+	else {
+		int mid = (start + end) / 2;
+		tree[index] = init(2 * index, start, mid) + init(2 * index + 1, mid + 1, end);
+	}
+	return tree[index];
+}
+
+int find_sum(int index, int start, int end, int left, int right) {
+	if (end < left || right < start) return 0;
+	if (left <= start && end <= right) return tree[index];
+	int mid = (start + end) / 2;
+	return find_sum(2 * index, start, mid, left, right) + find_sum(2 * index + 1, mid + 1, end, left, right);
+}
+
+void update(int index, int start, int end, int idx, int x) {
+	if (start == end) {
+		tree[index] = x;
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (idx <= mid) update(2 * index, start, mid, idx, x);
+		else update(2 * index + 1, mid + 1, end, idx, x);
+		tree[index] = tree[2 * index] + tree[2 * index + 1];
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		ll h = ceil(log2(300001));
+		tree.resize(1 << (h + 1), 0);
+		arr.resize(300001, 0);
+
+		int n, m;
+		cin >> n >> m;
+		vector<int> index(n + 1);
+
+		for (int i = 1; i <= n; i++) {
+			arr[i + 150000] = 1;
+			index[i] = i + 150000;
+		}
+		minimum = 150000;
+		
+		init(1, 1, 300000);
+		int a;
+		while (m--) {
+			cin >> a;
+			int idx = index[a];
+			cout << find_sum(1, 1, 300000, 1, idx - 1) << "\n";
+			update(1, 1, 300000, idx, 0);
+			update(1, 1, 300000, minimum, 1);
+			index[a] = minimum;
+			minimum--;
+		}
+	}
+	return 0;
+}
