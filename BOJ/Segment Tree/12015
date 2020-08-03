@@ -1,0 +1,84 @@
+/*
+  12015-가장 긴 증가하는 부분수열 2
+  이 문제에서 segment tree는 [1, i-1]구간에서의 LIS의 크기를 저장하는 자료구조로 정의한다.
+  그리고 이 다음에 문제를 해결하는 step은 다음과 같다
+    1. <배열값,index>를 저장한 배열을 첫번째 값에 대해서는 오름차 순으로, 두번째 값에 대해서는 내림차순으로 정렬한다.
+       (두번째 값에 대해서 내림차순으로 정렬하는 이유는 10 10 10으로 되어있는 수열이 증가하는 수열로 인식하지 못하게 하기 위함이다.)
+    2. 각 값을 보면서 해당 [1, index-1]구간에서의 LIS크기를 구하고 index에 해당하는 곳에 구한 LIS크기+1로 update 해 준다.
+    3. 1.~2.의 과정을 반복한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+vector<int> tree;
+vector<pii> arr;
+
+bool cmp(pii a, pii b) {
+	if (a.first != b.first) return a.first < b.first;
+	else return a.second > b.second;
+}
+
+int find_max(int index, int start, int end, int left, int right) {
+	if (end < left || right < start) return 0;
+	if (left <= start && end <= right) return tree[index];
+	int mid = (start + end) / 2;
+	return max(find_max(2 * index, start, mid, left, right), find_max(2 * index + 1, mid + 1, end, left, right));
+}
+
+void update(int index, int start, int end, int idx, int x) {
+	if (start == end) {
+		tree[index] = x;
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (idx <= mid) update(2 * index, start, mid, idx, x);
+		else update(2 * index + 1, mid + 1, end, idx, x);
+		tree[index] = max(tree[2 * index],tree[2 * index + 1]);
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+	arr.resize(n + 1);
+	for (int i = 1; i <= n; i++) {
+		cin >> arr[i].first;
+		arr[i].second = i;
+	}
+
+	int h = ceil(log2(n));
+	tree.resize(1 << (h + 1), 0);
+	sort(arr.begin(), arr.end(), cmp);
+
+	for (int i = 1; i <= n; i++) {
+		int num = arr[i].first;
+		int index = arr[i].second;
+		int ret = find_max(1, 1, n, 1, index - 1);
+		update(1, 1, n, index, ret + 1);
+	}
+
+	cout << tree[1];
+	return 0;
+}
