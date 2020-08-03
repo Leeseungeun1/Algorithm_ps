@@ -1,0 +1,85 @@
+/*
+  12837-가계부(Hard)
+  이 문제는 segment tree를 각 일 별로 수입 또는 지출 내역을 저장하는 자료구조로 정의하여 문제를 해결할 수 있다.
+  수입 또는 지출내역이 들어온다면, 해당 내역을 update해 주고
+  전체 돈 사용 내역을 알고자 한다면 전체 구간의 수입 또는 지출내역의 값을 합해 계산 해 주면 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+vector<ll> tree;
+vector<ll> arr;
+
+ll init(int index, int start, int end) {
+	if (start == end) {
+		tree[index] = 0;
+	}
+	else {
+		int mid = (start + end) / 2;
+		tree[index] = init(2 * index, start, mid) + init(2 * index + 1, mid + 1, end);
+	}
+	return tree[index];
+}
+
+void update(int index, int start, int end, int idx, int x) {
+	if (start == end) {
+		tree[index] += x;
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (idx <= mid) update(2 * index, start, mid, idx, x);
+		else update(2 * index + 1, mid + 1, end, idx, x);
+		tree[index] = tree[2 * index] + tree[2 * index + 1];
+	}
+}
+
+ll find_sum(int index, int start, int end, int left, int right) {
+	if (end < left || right < start) return 0;
+	if (left <= start && end <= right) return tree[index];
+	int mid = (start + end) / 2;
+	return find_sum(2 * index, start, mid, left, right) + find_sum(2 * index + 1, mid + 1, end, left, right);
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m;
+	cin >> n >> m;
+	ll h = ceil(log2(n));
+	tree.resize(1 << (h + 1));
+	init(1, 1, n);
+
+	ll a, b, c;
+	while (m--) {
+		cin >> a >> b >> c;
+		if (a == 1) {
+			update(1, 1, n, b, c);
+		}
+		else {
+			cout << find_sum(1, 1, n, b, c) << "\n";
+		}
+	}
+	
+	return 0;
+}
