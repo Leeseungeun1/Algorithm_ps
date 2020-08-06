@@ -1,0 +1,60 @@
+/*
+  3896 - 소수 사이 수열
+  우선 에라토스테네스의 체를 이용하여 1부터 3,000,000까지 소수를 구한다.
+  그리고 입력되는 수가 만약 소수면 0을 출력하고,
+  입력되는 수가 소수가 아니라면 해당 수와 제일 가까운 앞, 뒤에 있는 소수를 찾는다.
+  그렇게 소수 사이의 수열의 길이를 구한 뒤 출력한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<bool> isPrime(2000000, true);
+	isPrime[0] = isPrime[1] = false;
+	for (int i = 1; i < 2000000; i++) {
+		if (!isPrime[i]) continue;
+		for (int j = i * 2; j < 2000000; j = j + i) {
+			if (!isPrime[j]) continue;
+			isPrime[j] = false;
+		}
+	}
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int n;
+		cin >> n;
+		if (isPrime[n]) {
+			cout << "0\n";
+			continue;
+		}
+		int start = n, end = n;
+		while (!isPrime[start]) start--;
+		while (!isPrime[end]) end++;
+		cout << end - start<< "\n";
+	}
+	return 0;
+}
