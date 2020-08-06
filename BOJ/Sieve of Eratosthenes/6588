@@ -1,0 +1,67 @@
+/*
+  6588 - 골드바흐의 추측
+  우선 에라토스테네스의 체를 이용하여 1부터 1,000,000까지의 소수를 구한다.
+  그리고 구한 소수들을 따로 prime배열에 저장한다.
+  그리고 입력되는 수가 prime배열에 있는 소수들의 합으로 표현되는지를 확인하고
+  표현이 된다면 해당 두 값을 출력한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<bool> isPrime(1000001, true);
+	isPrime[0] = isPrime[1] = false;
+	for (int i = 1; i < 1000001; i++) {
+		if (!isPrime[i]) continue;
+		for (int j = i * 2; j < 1000001; j = j + i) {
+			if (!isPrime[j]) continue;
+			isPrime[j] = false;
+		}
+	}
+
+	vector<int> prime;
+	for (int i = 1; i < 1000001; i++) {
+		if (isPrime[i]) prime.push_back(i);
+	}
+
+	int size = prime.size();
+	while (1) {
+		int n;
+		cin >> n;
+		if (n == 0)break;
+		int num = -1;
+		for (int i = 0; i < size; i++) {
+			if (prime[i] > n) break;
+			if (isPrime[n - prime[i]]) {
+				num = prime[i];
+				break;
+			}
+		}
+		if (num == -1) cout << "Goldbach's conjecture is wrong.\n";
+		else cout << n <<" = "<< min(num, n - num) << " + " << max(num, n - num) << "\n";
+	}
+	return 0;
+}
