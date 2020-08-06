@@ -1,0 +1,52 @@
+/*
+  1978-소수 찾기
+  1부터 1000까지의 소수를 찾기 위해서 우선 에라토스테네스의 체를 이용하여 소수만을 찾는다.
+  그리고 찾은 소수를 이용하여 입력받은 수가 소수인지 여부를 판단한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<bool> isPrime(1001, true);
+	isPrime[0] = isPrime[1] = false;
+	for (int i = 2; i <= 1000; i++) {
+		if (!isPrime[i]) continue;
+		for (int j = i * 2; j <= 1000; j = j + i) {
+			isPrime[j] = false;
+		}
+	}
+	
+	int n;
+	cin >> n;
+	int cnt = 0;
+	while (n--) {
+		int num;
+		cin >> num;
+		if (isPrime[num]) cnt++;
+	}
+	cout << cnt;
+	return 0;
+}
