@@ -1,0 +1,53 @@
+/*
+  4673 - 셀프 넘버
+  이 문제는 에라토스테네스의 체의 원리를 이용하여 해결할 수 있다.
+  1부터 10000까지 각 수가 생성할 수 있는 숫자를 지워나가면서 지워지지 않은 수를 차례대로 출력하면 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<bool> num(10001, true);
+	for (int i = 1; i <= 10000; i++) {
+		if (!num[i]) continue;
+		int n = i;
+		while (1) {
+			int cal = n;
+			while (n != 0) {
+				cal += n % 10;
+				n = n / 10;
+			}
+			if (cal > 10000) break;
+			num[cal] = false;
+			n = cal;
+		}
+	}
+
+	for (int i = 1; i <= 10000; i++) {
+		if (num[i]) cout << i << "\n";
+	}
+	return 0;
+}
