@@ -1,0 +1,54 @@
+/*
+  2960 - 에라토스테네스의 체
+  에라토스테네스의 체의 원리를 이용하여 각 소수부터 차례대로 해당 소수의 배수를 지워나가는 과정을 진행하면 된다.
+  지워나가는 수가 몇 번째로 지워지는 수인지 확인하고, k와 같은 번호로 삭제되는 수를 출력하면된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, k;
+	cin >> n >> k;
+	vector<bool> isPrime(n+1, true);
+	isPrime[0] = isPrime[1] = false;
+
+	int cnt = 0, ans = 0;
+	for (int i = 1; i <= n; i++) {
+		if (!isPrime[i])continue;
+		for (int j = i; j <= n; j = j + i) {
+			if (!isPrime[j]) continue;
+			isPrime[j] = false;
+			cnt++;
+			if (cnt == k) {
+				ans = j;
+				break;
+			}
+		}
+	}
+
+	cout << ans;
+	return 0;
+}
