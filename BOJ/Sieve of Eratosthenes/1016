@@ -1,0 +1,62 @@
+/*
+  1016 - 제곱ㄴㄴ수
+  이 문제를 에라토스테네스의 체의 원리를 이용하여 해결했다.
+  우선 1,000,000,000,000이 1,000,000의 제곱수이기 때문에 1부터 1,000,000까지 모든 수를 제곱했을 때 나오는 제곱수의 값을 저장한다.
+  그리고 각각의 제곱수를 곱했을 때 나올 수 있는 수를 제거하면서 제곱ㄴㄴ수를 찾는다.
+  이 때, 1,000,000,000,000크기의 배열을 생성할 수 없기 때문에 max-min size의 배열을 생성한다.
+  그리고 (제곱수를 이용하여 나올 수 있는 수 - min)를 이용하여 배열에 indexing하면서 제곱수를 이용하여 나올 수 있는 수를 걸러준다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<ll> mul;
+	for (ll i = 2; i <= 1000000; i++) {
+		mul.push_back(i * i);
+	}
+
+	int size = mul.size();
+	ll minimum, maximum;
+	cin >> minimum >> maximum;
+	vector<bool> check(maximum - minimum + 5 , true);
+	for (int i = 0; i < size; i++) {
+		ll start = minimum / mul[i];
+		if (minimum % mul[i] != 0) start++;
+		start = start * mul[i];
+		for (ll j = start; j <= maximum; j = j + mul[i]) {
+			if (!check[j - minimum]) continue;
+			check[j - minimum] = false;
+		}
+	}	
+
+	int cnt = 0;
+	for (int i = 0; i <= maximum - minimum; i++) {
+		if (check[i]) cnt++;
+	}
+
+	cout << cnt;
+	return 0;
+}
