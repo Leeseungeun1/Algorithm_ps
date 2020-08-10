@@ -1,0 +1,96 @@
+/*
+  2580 - 스토쿠
+  0에 1부터 9까지 넣어 보면서, 해당 칸에 들어가는 열, 행, 그리고 해당칸이 포함되는 사각형에 선택한 수가 있는지를 확인한다.
+  만약 수가 없다면 계속해서 다른 칸을 탐색하고, 수가 있다면 다른 수를 선택하는 방식으로 진행한다.
+  여기서 어떤 칸에 들어갈 수가 없다면 이전에 수를 잘못 넣은 것 이기 때문에
+  그 이후의 칸들을 채우기 보다는 이전에 채웠던 칸들에 다시 수를 채우면서 문제를 해결한다.
+  이 방법을 한 칸을 채울 때의 visited 정보를 바로 사용하기 위해서 DFS로 이용하여 구현한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, ll> pci;
+typedef pair<int, pair<int, int>> piii;
+
+vector<pii> arr;
+
+bool dfs(vector<vector<int>>& board, vector<vector<bool>>& row, vector<vector<bool>>& col, vector<vector<bool>>& square, int index, int size) {
+	if (index == size) return true;
+
+	bool ret = false;
+	for (int i = 1; i <= 9; i++) {
+		int x = arr[index].first;
+		int y = arr[index].second;
+		if (row[x][i] || col[y][i] || square[(x / 3) * 3 + (y / 3)][i]) continue;
+		board[x][y] = i;
+		row[x][i] = true;
+		col[y][i] = true;
+		square[(x / 3) * 3 + (y / 3)][i] = true;
+		ret = dfs(board, row, col, square, index+1, size);
+		if (ret) break;
+		row[x][i] = false;
+		col[y][i] = false;
+		square[(x / 3) * 3 + (y / 3)][i] = false;
+	}
+	return ret;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<vector<int>> board(9, vector<int>(10));
+	vector<vector<bool>> row(9, vector<bool>(10, false));
+	vector<vector<bool>> col(9, vector<bool>(10, false));
+	vector<vector<bool>> square(9, vector<bool>(10, false));
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			cin >> board[i][j];
+			if (board[i][j] != 0) {
+				row[i][board[i][j]] = true;
+				col[j][board[i][j]] = true;
+				square[(i / 3) * 3 +(j / 3)][board[i][j]] = true;
+			}
+			else arr.push_back({ i,j });
+		}
+	}
+
+	int size = arr.size();
+	for (int i = 1; i <= 9; i++) {
+		int x = arr[0].first;
+		int y = arr[0].second;
+		if (row[x][i] || col[y][i] || square[(x / 3) * 3 + (y / 3)][i]) continue;
+		board[x][y] = i;
+		row[x][i] = true;
+		col[y][i] = true;
+		square[(x / 3) * 3 + (y / 3)][i] = true;
+		bool ret = dfs(board, row, col, square, 1, size);
+		if (ret) break;
+		row[x][i] = false;
+		col[y][i] = false;
+		square[(x / 3) * 3 + (y / 3)][i] = false;
+	}
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			cout << board[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	return 0;
+}
