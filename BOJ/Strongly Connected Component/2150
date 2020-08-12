@@ -1,0 +1,102 @@
+/*
+  2150 - Strongly Connected Component
+  SCC를 묶어내는 문제로, Tarjan algorithm을 이용하여 이 문제를 해결하였다.
+  우선 DFS를 이용하여 DFS tree를 생성한다.
+  그리고 각 node마다 부모 node로도 이동할 수 있는지 살펴본뒤, 이동할 수 있다면 부모 node의 dfsn 값을 return한다.
+  이 과정을 토앻서 SCC에 해당하는(return 된 dfsn값을 가진) node를 만나게 되면, stack에서 node를 제거하면서 SCC를 찾는다.
+  그리고 SCC를 찾은 경우에 해당 SCC를 따로 저장한다.
+  여기에서 dfsn는 tree 형성시 방문 여부를 나타내고, finished 배열은 SCC로 추출되었는지 여부를 나타낸다.
+  그렇기 떄문에, dfs 탐색은 진행되었으나 SCC추출이 되지 않은 node의 경우 해당 node의 dfsn 값과 현재 node의 dfsn 값을 비교하면서 scc에 해당하는
+  node를 찾는다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int num = 1;
+stack<int> s;
+int sccN = 0;
+vector<vector<int>> scc;
+int DFS(vector<vector<int>>& adj, vector<int>& dfsn, int node, vector<bool>& finished, vector<int>& sccnum) {
+	dfsn[node] = num++;
+	s.push(node);
+
+	int result = dfsn[node];
+	for (auto x : adj[node]) {
+		if (dfsn[x] == 0) result = min(result, DFS(adj, dfsn, x, finished, sccnum));
+		else if (!finished[x]) result = min(result, dfsn[x]);	//역간선 또는 교차간선을 보면서 scc root 번호 찾기(갈 수 있는 부모 node)
+	}
+
+	if (result == dfsn[node]) {	//어떤 특정 node의 자식node에서 해당 node로 올 수 있는 경우
+		vector<int> curSCC;
+		while (1) {
+			int t = s.top();
+			s.pop();
+			finished[t] = true;
+			curSCC.push_back(t);
+			sccnum[t] = sccN;
+			if (t == node) break;	//root가 나올 때까지 SCC로 묶음
+		}
+		sort(curSCC.begin(), curSCC.end());
+		scc.push_back(curSCC);
+		sccN++;
+	}
+	return result;
+}
+
+bool cmp(vector<int> a, vector<int> b) {
+	return a[0] < b[0];
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int v, e;
+	cin >> v >> e;
+	vector<vector<int>> adj(v + 1);
+	vector<int> dfsn(v + 1, 0);
+	vector<bool> finished(v + 1, false);
+	vector<int> sccnum(v + 1, 0);
+	for (int i = 0; i < e; i++) {
+		int a, b;
+		cin >> a >> b;
+		adj[a].push_back(b);	//directed graph
+	}
+
+	for (int i = 1; i <= v; i++) {
+		if (dfsn[i] == 0) DFS(adj, dfsn, i, finished, sccnum);
+	}
+	//SCC로 묶기 완료
+
+	sort(scc.begin(), scc.end(), cmp);
+	int size = scc.size();
+	cout << size << "\n";
+	for (int i = 0; i < size; i++) {
+		for (auto x : scc[i]) {
+			cout << x << " ";
+		}
+		cout << "-1\n";
+	}
+
+	return 0;
+}
