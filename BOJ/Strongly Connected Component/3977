@@ -1,0 +1,118 @@
+/*
+  3977 - 축구 전술
+  우선 cycle이 존재하는 DAG이므로, SCC를 추출하여 위상정렬로 만든다.
+  그리고 한 곳에서 출발하여 모든 곳으로 이동할 수 있어야 하므로, indegree의 값이 0인 scc를 찾는다.
+  만약 indegree의 값이 0인 scc가 2개 이상이면, 여러 곳에서 출발할 수 있으므로 confused를 출력한다.
+  그렇지 않은 경우 해당 scc를 구성하는 node의 번호를 오름차순으로 출력한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int num = 1;
+int snum = 0;
+stack<int> s;
+vector<vector<int>>scc;
+int DFS(vector<vector<int>>& adj, vector<int>& dfsn, int node, vector<bool>& finished, vector<int>& sccnum) {
+	dfsn[node] = num++;
+	s.push(node);
+
+	int result = dfsn[node];
+	for (auto x : adj[node]) {
+		if (dfsn[x] == 0) result = min(result, DFS(adj, dfsn, x, finished, sccnum));
+		if (!finished[x]) result = min(result, dfsn[x]);
+	}
+
+	if (result == dfsn[node]) {
+		vector<int> curScc;
+		while (1) {
+			int t = s.top();
+			s.pop();
+			curScc.push_back(t);
+			sccnum[t] = snum;
+            finished[t]=true;
+			if (t == node) break;
+		}
+		snum++;
+		scc.push_back(curScc);
+	}
+	return result;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		num = 1;
+		snum = 0;
+		while (!s.empty()) s.empty();
+		scc.clear();
+
+		int n, m;
+		cin >> n >> m;
+		vector<vector<int>> adj(n);
+		vector<bool> finished(n, false);
+		vector<int> dfsn(n, 0);
+		vector<int> sccnum(n, 0);
+
+		for (int i = 0; i < m; i++) {
+			int a, b;
+			cin >> a >> b;
+			adj[a].push_back(b);
+		}
+
+		for (int i = 0; i < n; i++) {
+			if (dfsn[i] == 0) DFS(adj, dfsn, i, finished, sccnum);
+		}
+
+		vector<int> indegree(snum, 0);
+		for (int i = 0; i < n; i++) {
+			for (int j : adj[i]) {
+				if (sccnum[i] != sccnum[j]) indegree[sccnum[j]]++;
+			}
+		}
+
+		int cnt = 0;
+		int index = 0;
+		for (int i = 0; i < snum; i++) {
+			if (indegree[i] == 0) {
+				cnt++;
+				index = i;
+			}
+		}
+		if (cnt != 1) cout << "Confused\n";
+		else {
+			sort(scc[index].begin(), scc[index].end());
+			int size = scc[index].size();
+			for (int i = 0; i < size; i++) {
+				cout << scc[index][i] << "\n";
+			}
+		}
+		cout << "\n";
+
+	}
+	return 0;
+}
