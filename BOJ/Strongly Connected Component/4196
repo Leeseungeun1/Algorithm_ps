@@ -1,0 +1,96 @@
+/*
+  4196 - 도미노
+  해당 그래프를 SCC끼리 묶어 위상정렬을 만든다.
+  그리고 위상정렬에서 indegree의 값이 0인 scc만 별도로 쓰러트려주면 되므로,
+  indegree의 값이 0인 경우를 count한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+
+int snum = 0;
+int num = 0;
+stack<int> s;
+int DFS(vector<vector<int>>& adj, vector<int>& dfsn, int node, vector<bool>& finished, vector<int>& sccnum) {
+	dfsn[node] = num++;
+	s.push(node);
+
+	int result = dfsn[node];
+	for (auto x : adj[node]) {
+		if (dfsn[x] == -1) result = min(result, DFS(adj, dfsn, x, finished, sccnum));
+		if (!finished[x]) result = min(result, dfsn[x]);
+	}
+
+	if (result == dfsn[node]) {
+		while (1) {
+			int t = s.top();
+			s.pop();
+			finished[t] = true;
+			sccnum[t] = snum;
+			if (t == node) break;
+		}
+		snum++;
+	}
+	return result;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int t;
+	cin >> t;
+	while (t--) {
+        snum = 0;
+		num = 0;
+		while (!s.empty()) s.pop();
+		int n, m;
+		cin >> n >> m;
+		vector<vector<int>> adj(n + 1);
+		vector<int> dfsn(n + 1, -1);
+		vector<bool> finished(n + 1, false);
+		vector<int> sccnum(n + 1, 0);
+		for (int i = 0; i < m; i++) {
+			int a, b;
+			cin >> a >> b;
+			adj[a].push_back(b);
+		}
+		for (int i = 1; i <= n; i++) {
+			if (dfsn[i] == -1) DFS(adj, dfsn, i, finished, sccnum);
+		}
+
+		vector<int> indegree(snum, 0);
+		for (int i = 1; i <= n; i++) {
+			for (int j : adj[i]) {
+				if (sccnum[i] != sccnum[j]) indegree[sccnum[j]]++;
+			}
+		}
+
+		int result = 0;
+		for (int i = 0; i < snum; i++) {
+			if (indegree[i] == 0) result++;
+		}
+		cout << result<<"\n";
+	}
+	return 0;
+}
