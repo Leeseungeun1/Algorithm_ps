@@ -1,0 +1,135 @@
+/*
+  4013-ATM
+  cycle이 존재하는 DAG이므로 우선 SCC를 추출하여 위상정렬을 만든다.
+  그리고 DFS를 진행하면서 도달할 수 있는 레스토랑에 도달했을 때의 최댓값을 구한다.
+  이 때, 시간을 절약하기 위해서 dp를 추가적으로 사용한다.
+  dp[n].first는 n부터 도착할 수 있는 레스토랑에 도착했을 때, 인출할 수 있는 돈의 최댓값을 의미한다.
+  dp[n].second의 값이 0이면 n부터 도착할 수 있는 레스토랑이 없다는 뜻이고,
+  1이면 n부터 도착할 수 있는 레스토랑이 있다는 뜻이다.
+  따라서 n의 인접 node 중 하나를 next라고 하고, dp[next].second의 값이 0이면 next에서 인출할 수 있는 돈의 값을 따로 계산하지 않는다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+
+ll num = 1;
+ll snum = 0;
+stack<ll> s;
+vector<ll> scc;
+set<ll> stop;
+vector<pair<ll, ll>> dp;
+ll DFS(vector<vector<ll>>& adj, vector<ll>& dfsn, ll node, vector<bool>& finished, vector<ll>& sccnum, vector<ll>& money) {
+	dfsn[node] = num++;
+	s.push(node);
+
+	ll result = dfsn[node];
+	for (ll x : adj[node]) {
+		if (dfsn[x] == 0) result = min(result, DFS(adj, dfsn, x, finished, sccnum, money));
+		if (!finished[x]) result = min(result, dfsn[x]);
+	}
+
+	if (result == dfsn[node]) {
+		ll score = 0;
+		while (1) {
+			ll t = s.top();
+			s.pop();
+			finished[t] = true;
+			sccnum[t] = snum;
+			score = score + money[t];
+			if (t == node) break;
+		}
+		scc.push_back(score);
+		snum++;
+	}
+	return result;
+}
+
+pair<ll, ll> find_DFS(vector<vector<ll>>& sccadj, vector<bool>& visited, ll node, ll sum) {
+	if (dp[node].first != -1) return dp[node];
+
+	visited[node] = true;
+
+	dp[node].first = scc[node];
+	if (stop.find(node) != stop.end()) dp[node].second = 1;
+	else dp[node].second = 0;
+
+	for (auto x : sccadj[node]) {
+		if (visited[x]) continue;
+		auto ret = find_DFS(sccadj, visited, x, sum + scc[x]);
+		dp[node].second = max(dp[node].second, ret.second);
+		if (ret.second != 0) dp[node].first = max(dp[node].first, ret.first + scc[node]);
+	}
+
+	visited[node] = false;
+	return dp[node];
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	ll n, m;
+	cin >> n >> m;
+	vector<vector<ll>> adj(n + 1);
+	vector<ll> dfsn(n + 1, 0);
+	vector<bool> finished(n + 1, false);
+	vector<ll> sccnum(n + 1, 0);
+	vector<ll> money(n + 1, 0);
+
+	for (ll i = 0; i < m; i++) {
+		ll a, b;
+		cin >> a >> b;
+		adj[a].push_back(b);
+	}
+
+	for (ll i = 1; i <= n; i++) cin >> money[i];
+
+	for (ll i = 1; i <= n; i++) {
+		if (dfsn[i] == 0) DFS(adj, dfsn, i, finished, sccnum, money);
+	}
+
+	ll start, restaurant;
+	cin >> start >> restaurant;
+	
+	for (ll i = 0; i < restaurant; i++) {
+		ll input;
+		cin >> input;
+		stop.insert(sccnum[input]);
+	}
+
+	//SCC를 dfs로 하여 문제 해결(dfs  DP)
+	vector<vector<ll>> sccadj(snum);
+	for (ll i = 1; i <= n; i++) {
+		for (ll j : adj[i]) {
+			if (sccnum[i] != sccnum[j]) {
+				sccadj[sccnum[i]].push_back(sccnum[j]);
+			}
+		}
+	}
+	vector<bool> visited(snum, false);
+	dp.resize(snum, { -1,-1 });
+	find_DFS(sccadj, visited, sccnum[start], scc[sccnum[start]]);
+
+	cout << dp[sccnum[start]].first;
+	return 0;
+}
