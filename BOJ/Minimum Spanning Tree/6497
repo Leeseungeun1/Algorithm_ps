@@ -1,0 +1,83 @@
+/*
+  6497-전력난
+  최대 전선 제거 비용을 구하기 위해서는 제거하지 않는 전선의 비용이 최소가 되도록 하면 된다.
+  따라서 전선을 간선으로 하는 MST를 구한 뒤
+  MST를 구성하는 전선의 가중치의 합 구하고 전체 전선에서 가중치 합을 빼주면 제거하는 전선의 합의 최댓값을 구할 수 있다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 987654321
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+int find(int a, vector<int>& parent) {
+	if (parent[a] < 0) return a;
+	return parent[a] = find(parent[a], parent);
+}
+
+void merge(int a, int b, vector<int>& parent) {
+	int aRoot = find(a, parent);
+	int bRoot = find(b, parent);
+	if (aRoot == bRoot) return;
+	if (parent[aRoot] < parent[bRoot]) {
+		parent[aRoot] += parent[bRoot];
+		parent[bRoot] = aRoot;
+	}
+	else {
+		parent[bRoot] += parent[aRoot];
+		parent[aRoot] = bRoot;
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int m, n;
+	while (1) {
+		cin >> m >> n;
+		if (m == 0 && n == 0) break;
+		vector<piii> edge;
+		vector<int> parent(m, -1);
+		int a, b, w;
+		int total = 0;
+		for (int i = 0; i < n; i++) {
+			cin >> a >> b >> w;
+			edge.push_back({ w, {a,b} });
+			total += w;
+		}
+		sort(edge.begin(), edge.end());
+		int edgesize = edge.size();
+		int get = 0;
+		for (int i = 0; i < edgesize; i++) {
+			int e1 = find(edge[i].second.first, parent);
+			int e2 = find(edge[i].second.second, parent);
+			if (e1 == e2) continue;
+			merge(edge[i].second.first, edge[i].second.second, parent);
+			get = get + edge[i].first;
+		}
+		cout << total - get << "\n";
+	}
+	return 0;
+}
