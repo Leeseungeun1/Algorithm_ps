@@ -1,0 +1,97 @@
+/*
+  6086 - 최대 유량
+  무향 그래프에서 기본적인 network flow를 구현하는 문제다.
+  우선 c배열에는 각 pipe의 capacity를, f배열에는 flow를 저장한다.
+  그리고 인접 리스트를 구한다.
+  그리고 인접리스트를 이용하여 BFS를 진행하면서 지날 수 있는 경로를 찾는다.
+  그리고 해당 경로에서 최대로 흐를 수 있는 유량의 수를 계산하고, 각 파이프 별로 흐르는 유량의 수를 더해준다.
+  이 과정을 반복하면서 출발점으로 부터 종점으로 이동할 수 없을 때 까지 이 과정을 반복한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 987654321
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+
+int ctoi(char c) {
+	if (c <= 'Z') return c - 'A';
+	else return c - 'a' + 26;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	int n;
+	cin >> n;
+	vector<vector<int>> c(52, vector<int>(52, 0));	//capacity
+	vector<vector<int>> f(52, vector<int>(52, 0));	//flow
+	vector<vector<int>> adj(52);
+
+	char u, v;
+	int w;
+	for (int i = 0; i < n; i++) {
+		cin >> u >> v >> w;
+		int s = ctoi(u);
+		int e = ctoi(v);
+		c[s][e] += w;
+		c[e][s] += w;
+		adj[s].push_back(e);
+		adj[e].push_back(s);
+	}
+
+	int total = 0, s = ctoi('A'), e = ctoi('Z');
+
+	while (1) {
+		vector<int> prev(52, -1);
+		queue<int> q;
+		q.push(s);
+		while (!q.empty() && prev[e] == -1) {
+			int curr = q.front();
+			q.pop();
+			for (int next : adj[curr]) {
+				if (c[curr][next] - f[curr][next] > 0 && prev[next] == -1) {
+					q.push(next);
+					prev[next] = curr;
+					if (next == e) break;
+				}
+			}
+		}
+		if (prev[e] == -1) break;
+
+		int flow = INF;
+		//최소 유량 찾기
+		for (int i = e; i != s; i = prev[i]) {
+			flow = min(flow, c[prev[i]][i] - f[prev[i]][i]);
+		}
+		for (int i = e; i != s; i = prev[i]) {
+			f[prev[i]][i] += flow;
+			f[i][prev[i]] -= flow;
+		}
+		total += flow;
+	}
+	cout << total;
+	return 0;
+}
