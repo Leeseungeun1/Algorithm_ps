@@ -1,0 +1,97 @@
+/*
+  2188 - 축사 배정
+  이 문제는 소를 보내는 곳을 하나의 source로 보고, 축사가 모이는 곳을 하나의 sink로 취급하여 문제를 해결할 수 있다.
+  이 때, 그래프는 소->축사의 방향성을 가지고 있기 때문에 유향그래프지만,
+  역방향 flow의 가능성을 고려하기 위해서 인접 리스트를 양방향으로 구현한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 987654321
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	int n, m;
+	cin >> n >> m;
+	vector<vector<int>> c(n + m + 2, vector<int>(n + m + 2, 0));
+	vector<vector<int>> f(n + m + 2, vector<int>(n + m + 2, 0));
+	vector<vector<int>> adj(n + m + 2);
+	for (int i = 1; i <= n; i++) {
+		int a, b;
+		cin >> a;
+		while (a--) {
+			cin >> b;
+			adj[i].push_back(n + b);
+			c[i][n + b]++;
+			adj[n + b].push_back(i);
+		}
+		adj[0].push_back(i);
+		c[0][i]++;
+		adj[i].push_back(0);
+	}
+
+	for (int i = 1; i <= m; i++) {
+		adj[n + i].push_back(n + m + 1);
+		c[n + i][n + m + 1]++;
+		adj[n + m + 1].push_back(n + i);
+	}
+
+	int total = 0, s = 0, e = n + m + 1;
+
+	while (1) {
+		vector<int> prev(n + m + 2, -1);
+		queue<int> q;
+		q.push(s);
+		while (!q.empty() && prev[e] == -1) {
+			int cur = q.front();
+			q.pop();
+			for (int next : adj[cur]) {
+				if (c[cur][next] - f[cur][next] > 0 && prev[next] == -1) {
+					prev[next] = cur;
+					q.push(next);
+					if (next == e) break;
+				}
+			}
+		}
+		if (prev[e] == -1) break;
+
+		int flow = INF;
+		for (int i = e; i != s; i = prev[i]) {
+			flow = min(flow, c[prev[i]][i] - f[prev[i]][i]);
+		}
+
+		for (int i = e; i != s; i = prev[i]) {
+			f[prev[i]][i] += flow;
+			f[i][prev[i]] -= flow;
+		}
+		total += 1;
+	}
+	cout << total;
+
+	return 0;
+}
