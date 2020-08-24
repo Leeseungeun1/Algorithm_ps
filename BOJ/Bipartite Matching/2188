@@ -1,0 +1,76 @@
+/*
+  2188 - 축사 배정
+  소의 그룹과 축사 그룹으로 그룹을 나누어, 이분 매칭을 이용하여 문제를 해결한다.
+  이분매칭에서 소가 어떤 축사에 배정될 때, 해당 축소에 기존에 배정 된 소가 다른 축사로 배정될 수 있는지 여부를
+  DFS과정을 통해서 확인한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 1000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+bool dfs(int a, vector<int>& A, vector<int>& B, vector<bool>& visited, vector<vector<int>>& adj) {
+	visited[a] = true;
+	for (int b : adj[a]) {
+		// 매칭이 안되어있는 곳에 매칭을 하거나, 다른 점의 매칭을 옮길 수 있는 곳에 매칭을 하는 경우
+		if (B[b] == -1 || (!visited[B[b]] && dfs(B[b], A, B, visited, adj))) {
+			A[a] = b;
+			B[b] = a;
+			return true;
+		}
+	}
+	//매칭 실패
+	return false;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m;
+	cin >> n >> m;
+	vector<vector<int>> adj(n + 1);
+	for (int i = 1; i <= n; i++) {
+		int t;
+		cin >> t;
+		while (t--) {
+			int num;
+			cin >> num;
+			adj[i].push_back(num);
+		}
+	}
+
+	vector<int> A(n + 1, -1);
+	vector<int> B(m + 1, -1);
+
+	int ans = 0;
+	for (int i = 1; i <= n; i++) {
+		vector<bool> visited(n + 1, false);
+		if (dfs(i, A, B, visited, adj)) ans++;
+	}
+
+	cout << ans;
+	return 0;
+}
