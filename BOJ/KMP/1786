@@ -1,0 +1,70 @@
+/*
+  1786 - 찾기
+  KMP 알고리즘을 이용하여 T 문자열 내에 P 문자열이 있는지 판별한다.
+  만약 비교 중에 다른 두 문자를 만났다면 실패함수를 이용하여 그 다음 비교할 곳을 찾는다.
+  T 문자열 내에서 P 문자열을 찾았다면, 해당 위치를 기록하여 판별 작업이 끝난 후 위치를 출력한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 1000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	vector<int> ans;
+	string T, P;
+	getline(cin, T);
+	getline(cin, P);
+
+	//실패함수 만들기
+	int tsize = T.size();
+	int psize = P.size();
+	vector<int> fail(psize, 0);
+	int j = 0;
+	for (int i = 1; i < psize; i++) {
+		while (j > 0 && P[i] != P[j]) j = fail[j - 1];
+		if (P[i] == P[j]) fail[i] = ++j;
+	}
+
+	for (int i = 0, j = 0; i < tsize;i++) {
+		while (j > 0 && T[i] != P[j]) j = fail[j - 1];
+		if (T[i] == P[j]) {
+			if (j == psize - 1) {
+				ans.push_back(i - psize + 2);
+				j = fail[j];
+			}
+			else j++;
+		}
+	}
+
+	int size = ans.size();
+	cout << size << "\n";
+	for (int i = 0; i < size; i++) {
+		cout << ans[i] << " ";
+	}
+	return 0;
+}
