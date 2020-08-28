@@ -1,0 +1,52 @@
+/*
+  1305 - 광고
+  주어진 문자열에서 어느 부분이 중독 된 부분인지 찾으면 해결되는 문제다.
+  중독 된 부분을 찾기 위해서 해당 문자열의 실패함수를 구한다.
+  그리고 맨 마지막 문자의 실패함수 값이 문자열에서 몇 번째 문자까지 겹치는지를 나타내므로,
+  전체 문자 길이에서 해당 값만 빼 주면 광고의 최소 길이를 구할 수 있다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 1000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+	string s;
+	cin >> s;
+
+	vector<int> fail(n, 0);
+	for (int i = 1, j = 0; i < n; i++) {
+		while (j > 0 && s[i] != s[j]) j = fail[j - 1];
+		if (s[i] == s[j]) fail[i] = ++j;
+	}
+
+	cout << n - fail[n - 1];
+	return 0;
+}
