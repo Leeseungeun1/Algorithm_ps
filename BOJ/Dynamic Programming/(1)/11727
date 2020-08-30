@@ -1,0 +1,55 @@
+/*
+  11727 - 2xn 타일링 2
+  i번째 열에 타일을 두는 것을 다음과 같은 3가지 경우로 나눌 수 있다.
+    1. i번째 열에 2*1 타일 하나를 두면 i+1번째 열 한 열에는 어떤 타일도 놓을 수 있다.
+    2. i번째 열에 두 개의 1*2 타일을 두면 i+2번째 열에는 어떤 타일도 놓을 수 있다.
+    3. i번째 열에 2*2 타일 하나를 두면 i+2번째 열에는 어떤 타일도 놓을 수 있다.
+  따라서 다음과 같은 점화식을 세울 수 있다.
+    dp[i] = (dp[i + 1] + 2 * dp[i + 2]) % mod;
+    (dp[i]: i번째 열부터 n번째 열까지 주어진 타일을 배치할 수 있는 경우의 수)
+  이 식을 이용하여 문제를 해결할 수 있다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 10007
+#define modulo 1000000007
+#define INF 1000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n;
+	cin >> n;
+	vector<int> dp(n, 0);
+	dp[n - 1] = 1;
+	if (n != 1) dp[n - 2] = 3;
+	for (int i = n - 3; i >= 0; i--) {
+		dp[i] = (dp[i + 1] + 2 * dp[i + 2]) % mod;
+	}
+	cout << dp[0];
+	return 0;
+}
