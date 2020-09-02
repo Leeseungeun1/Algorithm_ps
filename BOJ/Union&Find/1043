@@ -1,0 +1,95 @@
+/*
+  1043 - 거짓말
+  이 문제에는 놓치기 쉬운 부분들이 아주 많다.
+  우선 가장 중요하게 고려해야할 사항은
+    " 진실을 알지 못하는 사람이 있는 파티에 가서 거짓말을 했는데, 해당 사람이 나중에 진실을 아는 사람과 파티에 있게된다면
+      진실을 알지 못했던 사람은 자기가 전에 파티에서 들은 내용과 현재 파티에서 들은 내용이 달라 지민이가 거짓말 쟁이라는 것을 알게 된다."
+  라는 점 이다.
+  따라서 이런 경우를 모두 캐치하기 위해서 유니온 파인드를 이용했다.
+  우선 각 파티를 돌면서, 각 파티별로 union을 진행하여 진실을 아는 사람과, 그 사람과 같이 파티에 가는 사람들을 merge한다.
+  그리고 다시 각 파티를 보면서 파티에 오는 사람들이 모두 진실을 아는 사람이 아니거나, 추후에 진실을 아는 사람과 파티를 할 경우가 없는 경우에만
+  해당 파티를 갈 수 있는 것으로 체크 해 주면 된다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 100000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+vector<int> parent;
+int find(int a) {
+	if (parent[a] < 0) return a;
+	return parent[a] = find(parent[a]);
+}
+
+void merge(int a, int b) {
+	int aRoot = find(a);
+	int bRoot = find(b);
+	if (aRoot == bRoot) return;
+	parent[aRoot] += parent[bRoot];
+	parent[bRoot] = aRoot;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m, real;
+	cin >> n >> m >> real;
+	
+	parent.resize(n + 1, -1);
+	set<int> s;
+	
+	for (int i = 0; i < real; i++) {
+		int num;
+		cin >> num;
+		s.insert(num);
+	}
+
+	vector<vector<int>> party;
+	for (int i = 0; i < m; i++) {
+		int num;
+		cin >> num;
+		vector<int> temp(num);
+		for (int j = 0; j < num; j++) cin >> temp[j];
+		for (int j = 0; j < num - 1; j++) {
+			if (s.find(find(temp[j])) != s.end()) merge(temp[j], temp[j + 1]);
+			else merge(temp[j + 1], temp[j]);	
+		}
+		party.push_back(temp);
+	}
+
+	int count = 0;
+	int size = party.size();
+	for (int i = 0; i < size; i++) {
+		int num = party[i].size();
+		bool can = true;
+		for (int j = 0; j < num; j++) {
+			if (s.find(find(party[i][j])) != s.end()) can = false;
+		}
+		if (can) count++;
+	}
+	cout << count;
+	return 0;
+}
