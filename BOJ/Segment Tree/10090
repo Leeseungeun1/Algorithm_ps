@@ -1,0 +1,77 @@
+/*
+  10090 - Counting Inversions
+  1부터 n까지를 index를 가진 array를 생성하고, 해당 array의 segment tree를 생성한다.
+  그리고 수 num이 입력되면 array[num]의 값을 1로 업데이트하고, 해당 업데이트 내용을 segment tree에도 적용한다.
+  그리고 이전에 입력된 수 중에서 num보다 큰 수가 있는지를 확인하기 위해서 [num+1, n]구간에 입력된 수의 개수를 re
+  segment tree를 이용하여 구한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 100000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+vector<ll> tree;
+vector<ll> arr;
+
+void update(int index, int start, int end, int idx) {
+	if (start == end) {
+		tree[index]++;
+	}
+	else {
+		int mid = (start + end) / 2;
+		if (idx <= mid) update(2 * index, start, mid, idx);
+		else update(2 * index + 1, mid + 1, end, idx);
+		tree[index] = tree[2 * index] + tree[2 * index + 1];
+	}
+}
+
+ll find_sum(int index, int start, int end, int left, int right) {
+	if (end < left || right < start) return 0;
+	if (left <= start && end <= right) return tree[index];
+	int mid = (start + end) / 2;
+	return find_sum(2 * index, start, mid, left, right) + find_sum(2 * index + 1, mid + 1, end, left, right);
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n;
+	cin >> n;
+
+	arr.resize(n, 0);
+	ll h = ceil(log2(n));
+	tree.resize(1 << (h + 1), 0);
+
+	ll count = 0;
+	for (int i = 1; i <= n; i++) {
+		int num;
+		cin >> num;
+		update(1, 1, n, num);
+		count = count + find_sum(1, 1, n, num + 1, n);
+	}
+	cout << count;
+	return 0;
+}
