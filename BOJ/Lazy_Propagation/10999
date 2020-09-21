@@ -1,0 +1,117 @@
+/*
+  10999 - 구간 합 구하기 2
+  segment tree를 구현하고, update되는 구간의 정보를 기록 할 lazy tree도 구현한다.
+  update되는 경우 lazy 값을 자식 node에게도 이월한다.
+  그리고 구간 합을 구하는 경우에는 lazy tree에 있는 정보를 이용하여 segment tree의 정보를 갱신하며, 구간 합을 구한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 100000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+vector<ll> tree;
+vector<ll> lazy;
+vector<ll> arr;
+
+void update_range(ll index, ll start, ll end, ll left, ll right, ll diff) {
+	if (lazy[index] != 0) {
+		tree[index] += (end - start + 1) * lazy[index];
+		// leaf가 아니면
+		if (start != end) {
+			lazy[index * 2] += lazy[index];
+			lazy[index * 2 + 1] += lazy[index];
+		}
+		lazy[index] = 0;
+	}
+	if (left > end || right < start) return;
+	if (left <= start && end <= right) {
+		tree[index] += (end - start + 1) * diff;
+		if (start != end) {
+			lazy[2 * index] = lazy[2 * index] + diff;
+			lazy[2 * index + 1] = lazy[2 * index + 1] + diff;
+		}
+		return;
+	}
+	ll mid = (start + end) / 2;
+	update_range(2 * index, start, mid, left, right, diff);
+	update_range(2 * index + 1, mid + 1, end, left, right, diff);
+	tree[index] = tree[2 * index] + tree[2 * index + 1];
+}
+
+ll sum(ll index, ll start, ll end, ll left, ll right) {
+	if (lazy[index] != 0) {
+		tree[index] += (end - start + 1) * lazy[index];
+		// leaf가 아니면
+		if (start != end) {
+			lazy[index * 2] += lazy[index];
+			lazy[index * 2 + 1] += lazy[index];
+		}
+		lazy[index] = 0;
+	}
+
+	if (left > end || right < start) return 0;
+	if (left <= start && end <= right) return tree[index];
+	ll mid = (start + end) / 2;
+	return sum(2 * index, start, mid, left, right) + sum(2 * index + 1, mid + 1, end, left, right);
+}
+
+ll init(ll index, ll start, ll end) {
+	if (start == end) {
+		tree[index] = arr[start];
+	}
+	else {
+		ll mid = (start + end) / 2;
+		tree[index] = init(2 * index, start, mid) + init(2 * index + 1, mid + 1, end);
+	}
+	return tree[index];
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int n, m, k;
+	cin >> n >> m >> k;
+	arr.resize(n + 1);
+	for(int i = 1; i <= n; i++) cin >> arr[i];
+
+	ll h = ceil(log2(n + 1));
+	tree.resize(1 << (h + 1), 0);
+	lazy.resize(1 << (h + 1), 0);
+
+	init(1, 1, n);
+
+	ll a, b, c, d;
+	for (int i = 0; i < m + k; i++) {
+		cin >> a;
+		if (a == 1) {
+			cin >> b >> c >> d;
+			update_range(1, 1, n, b, c, d);
+		}
+		else {
+			cin >> b >> c;
+			cout << sum(1, 1, n, b, c)<<"\n";
+		}
+	}
+	return 0;
+}
