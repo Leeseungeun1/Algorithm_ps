@@ -1,0 +1,76 @@
+/*
+  1238 - 파티
+  모든 도로의 길이가 모두 양수이고, 최단 경로를 찾는 문제이므로 다익스트라 알고리즘을 이용하여 해결할 수 있다.
+  각 점에서 시작해서 다른 지점으로 갈 때의 최단 경로를 모두 구한다.
+  그리고 모든 점에서 x점으로 가는 거리와, x점에서 다시 각 점으로 오는 거리의 합을 구하여 합이 제일 큰 값을 출력한다.
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#define mod 1000000007
+#define INF 100000000000
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <limits.h>
+#include <math.h>
+#include <queue>
+#include <string>
+#include <stack>
+#include <list>
+#include <stdlib.h>
+#include <cstring>
+#include <deque>
+#include <set>
+#include <map>
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<char, int> pci;
+typedef pair<int, pair<int, int>> piii;
+typedef pair<ll, pair<ll, ll>> plll;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	ll n, m, x;
+	cin >> n >> m >> x;
+	vector<vector<ll>> dijk(n + 1, vector<ll>(n + 1, INF));
+	vector<vector<pll>> dist(n + 1);
+	while (m--) {
+		ll a, b, c;
+		cin >> a >> b >> c;
+		dist[a].push_back({ b,c });
+	}
+
+	for (ll i = 1; i <= n; i++) {
+		dijk[i][i] = 0;
+		priority_queue<pll> q;
+		vector<bool> visited(n + 1, false);
+		visited[i] = true;
+		q.push({ 0,i });
+		while (!q.empty()) {
+			ll p = q.top().second;
+			ll d = -q.top().first;
+			q.pop();
+			visited[p] = true;
+			for (auto x : dist[p]) {
+				ll nextp = x.first;
+				ll nextd = x.second;
+				if (visited[nextp]) continue;
+				if (d + nextd < dijk[i][nextp]) {
+					dijk[i][nextp] = d + nextd;
+					q.push({ -(d + nextd) , nextp});
+				}
+			}
+		}
+	}
+
+	ll ans = 0;
+	for (ll i = 1; i <= n; i++) {
+		ans = max(ans, dijk[i][x] + dijk[x][i]);
+	}
+	cout << ans;
+	return 0;
+}
